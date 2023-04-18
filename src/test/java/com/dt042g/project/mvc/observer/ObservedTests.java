@@ -49,7 +49,7 @@ public class ObservedTests {
      * to an observed object.
      */
     @Test
-    public void observed_AttachObserver_OneToOne() throws IllegalAccessException {
+    public void test_Observed_AttachObserver_OneToOne() throws IllegalAccessException {
         for(int i = 0; i < instanceCount; i++)
             observeds[i].attachObserver(observers[i]);
 
@@ -66,7 +66,7 @@ public class ObservedTests {
      * to multiple observeds simultaneously.
      */
     @Test
-    public void observed_AttachObserver_ManyToMany() throws IllegalAccessException {
+    public void test_Observed_AttachObserver_ManyToMany() throws IllegalAccessException {
         for(int i = 0; i < instanceCount; i++)
             for(int j = 0; j < instanceCount; j++)
                 observeds[i].attachObserver(observers[j]);
@@ -87,7 +87,7 @@ public class ObservedTests {
      * times simultaneously to a single observed object.
      */
     @Test
-    public void observed_AttachObserver_Duplicate() throws IllegalAccessException {
+    public void test_Observed_AttachObserver_Duplicate() throws IllegalAccessException {
         for(int i = 0; i < instanceCount; i++) {
             for (int j = 0; j < instanceCount; j++) {
                 observeds[i].attachObserver(observers[j]);
@@ -114,7 +114,7 @@ public class ObservedTests {
      * Method for ensuring that observers can be detached from observed objects.
      */
     @Test
-    public void observed_DetachObserver() throws IllegalAccessException {
+    public void test_Observed_DetachObserver() throws IllegalAccessException {
         for(int i = 0; i < instanceCount; i++)
             for(int j = 0; j < instanceCount; j++)
                 observeds[i].attachObserver(observers[j]);
@@ -148,7 +148,7 @@ public class ObservedTests {
      * an attempt is made to detach a unattached observer.
      */
     @Test
-    public void observed_DetachObserver_Nonexistent() throws IllegalAccessException {
+    public void test_Observed_DetachObserver_Nonexistent() throws IllegalAccessException {
         for(int i = 0; i < instanceCount; i++)
             for(int j = 0; j < instanceCount; j++)
                 observeds[i].attachObserver(observers[j]);
@@ -180,7 +180,7 @@ public class ObservedTests {
      * *Observed* instance to a single *Observer* instance functions correctly.
      */
     @Test
-    public void observed_PushEvent_OneToOne() {
+    public void test_Observed_PushEvent_OneToOne() {
         // Attach one observer to each observed
         for(int i = 0; i < instanceCount; i++)
             observeds[i].attachObserver(observers[i]);
@@ -214,7 +214,7 @@ public class ObservedTests {
      * correctly.
      */
     @Test
-    public void observed_PushEvent_ManyToMany() {
+    public void test_Observed_PushEvent_ManyToMany() {
         // Attach all observers to all observeds
         for(int i = 0; i < instanceCount; i++)
             for(int j = 0; j < instanceCount; j++)
