@@ -22,7 +22,7 @@ public class SquareTests {
      */
     @BeforeAll
     public static void setupAll() throws NoSuchFieldException {
-        squareContentField = Square.class.getDeclaredField("squareContent");
+        squareContentField = Square.class.getDeclaredField("_squareContent");
         squareContentField.setAccessible(true);
     }
 
@@ -38,7 +38,7 @@ public class SquareTests {
      * Test the squares initial state.
      */
     @Test
-    public void testSquareInitState() {
+    public void test_Square_InitialState() {
         Square.State hiddenState = Square.State.HIDDEN;
 
         Square.State resultState = square.getState();
@@ -50,7 +50,7 @@ public class SquareTests {
      * Test the squares state after being set to hidden.
      */
     @Test
-    public void testSquareHideState() {
+    public void test_SetHidden_ValidateState() {
         Square.State hiddenState = Square.State.HIDDEN;
 
         square.setHidden();
@@ -63,7 +63,7 @@ public class SquareTests {
      * Test the squares state after being set to a flag.
      */
     @Test
-    public void testSquareFlagState() {
+    public void test_SetFlagged_ValidateState() {
         Square.State flaggedState = Square.State.FLAGGED;
         square.setFlagged();
 
@@ -75,7 +75,7 @@ public class SquareTests {
      * Test that the square sets an icon after being set to a flag.
      */
     @Test
-    public void testSetFlaggedIcon() throws IllegalAccessException {
+    public void test_SetFlagged_ValidateIcon() throws IllegalAccessException {
         JLabel squareLabel = (JLabel) squareContentField.get(square);
 
         square.setFlagged();
@@ -89,7 +89,7 @@ public class SquareTests {
      * Test the squares state after being set to a value.
      */
     @Test
-    public void testValueSquareState() {
+    public void test_SetSquareValue_ValidateState() {
         Square.State valueState = Square.State.VALUE;
         square.setValue(2);
 
@@ -101,7 +101,7 @@ public class SquareTests {
      * Test that the square sets the assigned value.
      */
     @Test
-    public void testSetSquareValue() throws IllegalAccessException {
+    public void test_SetSquareValue_ValidateValue() throws IllegalAccessException {
         JLabel squareLabel;
         String squareValue = "2";
         squareLabel = (JLabel) squareContentField.get(square);
@@ -117,7 +117,7 @@ public class SquareTests {
      * Test that the square does not set the assigned value if the value is zero.
      */
     @Test
-    public void testSetSquareValueZero() throws IllegalAccessException {
+    public void test_SetSquareValue_ValidateValueZero() throws IllegalAccessException {
         JLabel squareLabel;
         String expectedValue = "";
         squareLabel = (JLabel) squareContentField.get(square);
@@ -133,7 +133,7 @@ public class SquareTests {
      * Test the squares state after being set to a mine.
      */
     @Test
-    public void testMineValueState() {
+    public void test_SetMine_ValidateState() {
         Square.State valueState = Square.State.VALUE;
 
         square.setMine();
@@ -147,7 +147,7 @@ public class SquareTests {
      * Test that the square sets an icon after being set to a mine.
      */
     @Test
-    public void testSetMineIcon() throws IllegalAccessException {
+    public void test_SetMine_ValidateIcon() throws IllegalAccessException {
         JLabel squareLabel;
         squareLabel = (JLabel) squareContentField.get(square);
 
@@ -162,7 +162,7 @@ public class SquareTests {
      * Test that the setHidden() method removes a set value.
      */
     @Test
-    public void testHiddenRemovesValue() throws IllegalAccessException {
+    public void test_SetHidden_RemovesValue() throws IllegalAccessException {
         JLabel squareLabel;
         int value = 4;
         String expectedValue = "";
@@ -178,7 +178,7 @@ public class SquareTests {
      * Test that the setHidden() method removes a set image icon.
      */
     @Test
-    public void testHiddenRemovesImage() throws IllegalAccessException {
+    public void test_SetHidden_RemovesImage() throws IllegalAccessException {
         JLabel squareLabel;
         squareLabel = (JLabel) squareContentField.get(square);
 
@@ -194,7 +194,7 @@ public class SquareTests {
      * Test squares state change from hide to hide.
      */
     @Test
-    public void testSetStateHideToHide() {
+    public void test_SetHiddenToSetHidden_ValidateState() {
         Square.State expectedState = Square.State.HIDDEN;
 
         square.setHidden();
@@ -209,7 +209,7 @@ public class SquareTests {
      * Test squares state change from hide to value.
      */
     @Test
-    public void testSetStateHideToValue() {
+    public void test_SetHiddenToSetValue_ValidateState() {
         Square.State expectedState = Square.State.VALUE;
 
         square.setHidden();
@@ -224,7 +224,7 @@ public class SquareTests {
      * Test squares state change from hide to flag.
      */
     @Test
-    public void testSetStateHideToFlag() {
+    public void test_SetHiddenToSetFlagged_ValidateState() {
         Square.State expectedState = Square.State.FLAGGED;
 
         square.setHidden();
@@ -239,7 +239,7 @@ public class SquareTests {
      * Test squares state change from hide to mine.
      */
     @Test
-    public void testSetStateHideToMine() {
+    public void test_SetHiddenToSetMine_ValidateState() {
         Square.State expectedState = Square.State.VALUE;
 
         square.setHidden();
@@ -254,7 +254,7 @@ public class SquareTests {
      * Test squares state change from value to value.
      */
     @Test
-    public void testSetStateValueToValue() {
+    public void test_SetValueToSetValue_ValidateState() {
         Square.State expectedState = Square.State.VALUE;
         int value = 2;
 
@@ -270,7 +270,7 @@ public class SquareTests {
      * Test squares state change from value to hide.
      */
     @Test
-    public void testSetStateValueToHide() {
+    public void test_SetValueToSetHidden_ValidateState() {
         Square.State expectedState = Square.State.HIDDEN;
         int value = 2;
 
@@ -286,7 +286,7 @@ public class SquareTests {
      * Test squares state change from value to flag.
      */
     @Test
-    public void testSetStateValueToFlag() {
+    public void test_SetValueToSetFlagged_ValidateState() {
         Square.State expectedState = Square.State.FLAGGED;
         int value = 2;
 
@@ -302,7 +302,7 @@ public class SquareTests {
      * Test squares state change from value to mine.
      */
     @Test
-    public void testSetStateValueToMine() {
+    public void test_SetValueToSetMine_ValidateState() {
         Square.State expectedState = Square.State.VALUE;
         int value = 2;
 
@@ -318,7 +318,7 @@ public class SquareTests {
      * Test squares state change from flag to flag.
      */
     @Test
-    public void testSetStateFlagToFlag() {
+    public void test_SetFlaggedToSetFlagged_ValidateState() {
         Square.State expectedState = Square.State.FLAGGED;
 
         square.setFlagged();
@@ -333,7 +333,7 @@ public class SquareTests {
      * Test squares state change from flag to hide.
      */
     @Test
-    public void testSetStateFlagToHide() {
+    public void test_SetFlaggedToSetHidden_ValidateState() {
         Square.State expectedState = Square.State.HIDDEN;
 
         square.setFlagged();
@@ -348,7 +348,7 @@ public class SquareTests {
      * Test squares state change from flag to value.
      */
     @Test
-    public void testSetStateFlagToValue() {
+    public void test_SetFlaggedToSetValue_ValidateState() {
         Square.State expectedState = Square.State.VALUE;
         int value = 3;
 
@@ -364,7 +364,7 @@ public class SquareTests {
      * Test squares state change from flag to mine.
      */
     @Test
-    public void testSetStateFlagToMine() {
+    public void test_SetFlaggedToSetMine_ValidateState() {
         Square.State expectedState = Square.State.VALUE;
 
         square.setFlagged();
@@ -379,7 +379,7 @@ public class SquareTests {
      * Test squares state change from mine to mine.
      */
     @Test
-    public void testSetStateMineToMine() {
+    public void test_SetMineToSetMine_ValidateState() {
         Square.State expectedState = Square.State.VALUE;
 
         square.setMine();
@@ -394,7 +394,7 @@ public class SquareTests {
      * Test squares state change from mine to hide.
      */
     @Test
-    public void testSetStateMineToHide() {
+    public void test_SetMineToSetHidden_ValidateState() {
         Square.State expectedState = Square.State.HIDDEN;
 
         square.setMine();
@@ -409,7 +409,7 @@ public class SquareTests {
      * Test squares state change from mine to value.
      */
     @Test
-    public void testSetStateMineToValue() {
+    public void test_SetMineToSetValue_ValidateState() {
         Square.State expectedState = Square.State.VALUE;
         int value = 5;
 
@@ -425,7 +425,7 @@ public class SquareTests {
      * Test squares state change from mine to flag.
      */
     @Test
-    public void testSetStateMineToFlag() {
+    public void test_SetMineToSetFlagged_ValidateState() {
         Square.State expectedState = Square.State.FLAGGED;
 
         square.setMine();

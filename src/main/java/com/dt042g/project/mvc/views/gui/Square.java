@@ -21,8 +21,8 @@ public class Square extends JPanel {
         FLAGGED,
         VALUE
     }
-    private State currentState;
-    private JLabel squareContent;
+    private State _currentState;
+    private JLabel _squareContent;
 
     /**
      * Constructor which initializes the layout, border, colour, initial state and the
@@ -33,7 +33,7 @@ public class Square extends JPanel {
         setBorder(BorderFactory.createBevelBorder(1, Color.GRAY, Color.WHITE));
         setBackground(Color.LIGHT_GRAY);
 
-        currentState = State.HIDDEN;
+        _currentState = State.HIDDEN;
 
         initSquareContent();
 
@@ -44,14 +44,14 @@ public class Square extends JPanel {
      * Method for initializing the square content JLabel and adding the component to the square JPanel.
      */
     private void initSquareContent() {
-        squareContent = new JLabel();
+        _squareContent = new JLabel();
 
         // Force the JLabel text to be in the center of the square
-        squareContent.setHorizontalAlignment(JLabel.CENTER);
-        squareContent.setVerticalAlignment(JLabel.CENTER);
+        _squareContent.setHorizontalAlignment(JLabel.CENTER);
+        _squareContent.setVerticalAlignment(JLabel.CENTER);
 
-        squareContent.setVisible(true);
-        add(squareContent, BorderLayout.CENTER);
+        _squareContent.setVisible(true);
+        add(_squareContent, BorderLayout.CENTER);
     }
 
     /**
@@ -59,11 +59,11 @@ public class Square extends JPanel {
      * @param textContent the text to be added
      */
     private void setSquareText(final String textContent) {
-        squareContent.setText(textContent);
-        squareContent.setFont(new Font("Monaco", Font.BOLD, squareContent.getHeight() - 5));
+        _squareContent.setText(textContent);
+        _squareContent.setFont(new Font("Monaco", Font.BOLD, _squareContent.getHeight() - 5));
 
         // As the square has a border, setting an empty border to the JLabel makes sure that the text looks centered
-        squareContent.setBorder(BorderFactory.createEmptyBorder(0, 3, 3, 3));
+        _squareContent.setBorder(BorderFactory.createEmptyBorder(0, 3, 3, 3));
     }
 
     /**
@@ -74,12 +74,12 @@ public class Square extends JPanel {
      */
     private void setSquareIcon(final URL path, final String alt) {
         try {
-            squareContent.setBorder(null);
-            squareContent.setIcon(path == null ? null : new ImageIcon(ImageIO.read(path).getScaledInstance(
-                    squareContent.getWidth() - 5, squareContent.getHeight() - 5, Image.SCALE_SMOOTH)));
+            _squareContent.setBorder(null);
+            _squareContent.setIcon(path == null ? null : new ImageIcon(ImageIO.read(path).getScaledInstance(
+                    _squareContent.getWidth() - 5, _squareContent.getHeight() - 5, Image.SCALE_SMOOTH)));
 
         } catch (IOException e) {
-            squareContent.setIcon(null);
+            _squareContent.setIcon(null);
             setSquareText(alt);
         }
     }
@@ -89,7 +89,7 @@ public class Square extends JPanel {
      * @return the current state
      */
     public State getState() {
-        return currentState;
+        return _currentState;
     }
 
     /**
@@ -103,7 +103,7 @@ public class Square extends JPanel {
         setSquareIcon(null, "");
         validate();
 
-        currentState = State.HIDDEN;
+        _currentState = State.HIDDEN;
     }
 
     /**
@@ -114,7 +114,7 @@ public class Square extends JPanel {
         setSquareIcon(getClass().getResource("/flag.png"), "F");
 
         validate();
-        currentState = State.FLAGGED;
+        _currentState = State.FLAGGED;
     }
 
     /**
@@ -125,25 +125,25 @@ public class Square extends JPanel {
      */
     public void setValue(final int value) {
         switch (value) {
-            case 1 -> squareContent.setForeground(Color.BLUE);
-            case 2 -> squareContent.setForeground(new Color(0, 153, 0));
-            case 3 -> squareContent.setForeground(Color.RED);
-            case 4 -> squareContent.setForeground(new Color(102, 0, 153));
-            case 5 -> squareContent.setForeground(new Color(153, 0, 18));
-            case 6 -> squareContent.setForeground(new Color(0, 148, 153));
-            case 7 -> squareContent.setForeground(Color.BLACK);
-            case 8 -> squareContent.setForeground(new Color(73, 73, 73));
+            case 1 -> _squareContent.setForeground(Color.BLUE);
+            case 2 -> _squareContent.setForeground(new Color(0, 153, 0));
+            case 3 -> _squareContent.setForeground(Color.RED);
+            case 4 -> _squareContent.setForeground(new Color(102, 0, 153));
+            case 5 -> _squareContent.setForeground(new Color(153, 0, 18));
+            case 6 -> _squareContent.setForeground(new Color(0, 148, 153));
+            case 7 -> _squareContent.setForeground(Color.BLACK);
+            case 8 -> _squareContent.setForeground(new Color(73, 73, 73));
         }
 
         if (value != 0) {
             setSquareText(String.valueOf(value));
         }
 
-        validate();
         setBackground(new Color(164, 164, 164));
         setBorder(BorderFactory.createLineBorder(Color.GRAY));
+        validate();
 
-        currentState = State.VALUE;
+        _currentState = State.VALUE;
     }
 
     /**
@@ -153,10 +153,10 @@ public class Square extends JPanel {
     public void setMine() {
         setSquareIcon(getClass().getResource("/bomb.png"), "M");
 
-        validate();
         setBackground(Color.RED);
         setBorder(BorderFactory.createLineBorder(Color.GRAY));
+        validate();
 
-        currentState = State.VALUE;
+        _currentState = State.VALUE;
     }
 }
