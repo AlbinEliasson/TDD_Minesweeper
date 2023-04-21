@@ -166,7 +166,10 @@ public class GameModel extends Model {
      */
     @Override
     public void setSquareFlag(Point location, boolean value) {
-        throw new UnsupportedOperationException("Not implemented!");
+        if(_board == null)
+            return;
+
+        _board.get(location.x).get(location.y).setFlagged(value);
     }
 
     /**
