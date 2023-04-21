@@ -113,7 +113,10 @@ public class GameModel extends Model {
      */
     @Override
     public boolean isFlagged(Point location) {
-        throw new UnsupportedOperationException("Not implemented!");
+        if(_board == null)
+            return false;
+
+        return _board.get(location.x).get(location.y).isFlagged();
     }
 
     /**

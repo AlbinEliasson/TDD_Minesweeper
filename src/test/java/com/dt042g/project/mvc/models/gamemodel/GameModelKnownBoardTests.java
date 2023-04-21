@@ -93,4 +93,19 @@ public class GameModelKnownBoardTests {
     public void test_IsMine_CorrectReturn(Point location) {
         Assertions.assertEquals(boardTemplate[location.x][location.y].charAt(1) == 'M', model.isMine(location));
     }
+
+    /**
+     * Method for checking the isFlagged method to ensure that correct values
+     * are returned.
+     *
+     * @param location Location to check.
+     */
+    @ParameterizedTest
+    @MethodSource("Location")
+    public void test_IsFlagged_CorrectReturn(Point location) {
+        Assertions.assertEquals(boardTemplate[location.x][location.y].charAt(0) == 'F', model.isFlagged(location),
+                String.format(
+                        "Square at [%d, %d] (%s) gave incorrect 'isFlagged()' value!",
+                        location.x, location.y, boardTemplate[location.x][location.y]));
+    }
 }

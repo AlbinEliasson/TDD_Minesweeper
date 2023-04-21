@@ -410,4 +410,70 @@ public class GameModelDynamicTests {
         Assertions.assertThrows(IndexOutOfBoundsException.class, () -> model.setSquareFlag(new Point(Integer.MAX_VALUE, Integer.MAX_VALUE), true));
         Assertions.assertThrows(IndexOutOfBoundsException.class, () -> model.setSquareFlag(new Point(Integer.MAX_VALUE, Integer.MAX_VALUE), false));
     }
+
+    /**
+     * Method for checking the isFlagged method to ensure that correct values are
+     * returned when a valid location is provided.
+     *
+     * @param model The model to use.
+     * @param boardSize The expected size of the board.
+     * @param location The "first location" argument.
+     */
+    @ParameterizedTest
+    @MethodSource("ModelAndLocationGenerated")
+    public void test_IsFlagged_LocationValid(GameModel model, int boardSize, Point location) throws InvocationTargetException, IllegalAccessException {
+        methodGenerateSquares.invoke(model, location);
+        List<List<BackingSquare>> board = (List<List<BackingSquare>>) fieldBoard.get(model);
+
+        boolean originalRealValue = board.get(location.x).get(location.y).isFlagged();
+        Assertions.assertEquals(originalRealValue, model.isFlagged(location));
+
+        board.get(location.x).get(location.y).setFlagged(!originalRealValue);
+        Assertions.assertEquals(!originalRealValue, model.isFlagged(location));
+    }
+
+    /**
+     * Method for checking the behaviour of the isFlagged method when a null
+     * location is provided.
+     *
+     * @param model The model to use.
+     * @param boardSize The expected size of the board.
+     */
+    @ParameterizedTest
+    @MethodSource("Model")
+    public void test_IsFlagged_LocationNull(GameModel model, int boardSize) throws InvocationTargetException, IllegalAccessException {
+        methodGenerateSquares.invoke(model, new Point(0, 0));
+
+        Assertions.assertThrows(NullPointerException.class, () -> model.isFlagged(null));
+    }
+
+    /**
+     * Method for checking the behaviour of the isFlagged method when a negative
+     * location is provided.
+     *
+     * @param model The model to use.
+     * @param boardSize The expected size of the board.
+     */
+    @ParameterizedTest
+    @MethodSource("Model")
+    public void test_IsFlagged_LocationNegative(GameModel model, int boardSize) throws InvocationTargetException, IllegalAccessException {
+        methodGenerateSquares.invoke(model, new Point(0, 0));
+
+        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> model.isFlagged(new Point(Integer.MAX_VALUE * -1, Integer.MAX_VALUE * -1)));
+    }
+
+    /**
+     * Method for checking the behaviour of the isFlagged method when a OOB
+     * location is provided.
+     *
+     * @param model The model to use.
+     * @param boardSize The expected size of the board.
+     */
+    @ParameterizedTest
+    @MethodSource("Model")
+    public void test_IsFlagged_LocationOOB(GameModel model, int boardSize) throws InvocationTargetException, IllegalAccessException {
+        methodGenerateSquares.invoke(model, new Point(0, 0));
+
+        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> model.isFlagged(new Point(Integer.MAX_VALUE, Integer.MAX_VALUE)));
+    }
 }
