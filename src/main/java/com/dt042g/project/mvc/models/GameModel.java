@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Random;
 
 public class GameModel extends Model {
-    private final double _mineChance = 0.15;
+    private final double MINE_CHANCE = 0.15;
     private final int _boardSize;
     private List<List<BackingSquare>> _board;
 
@@ -34,7 +34,7 @@ public class GameModel extends Model {
                 row.add(i, new BackingSquare());
 
                 // Randomize whether the square is a mine
-                boolean isMine = random.nextDouble() < _mineChance;
+                boolean isMine = random.nextDouble() < MINE_CHANCE;
 
                 // Set whether it is a mine
                 row.get(i).setMine(isMine);

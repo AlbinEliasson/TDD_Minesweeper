@@ -102,7 +102,7 @@ public class GameModelDynamicTests {
     public static void setupAll() throws NoSuchFieldException, NoSuchMethodException {
         fieldBoard = GameModel.class.getDeclaredField("_board");
         fieldBoard.setAccessible(true);
-        fieldMineChance = GameModel.class.getDeclaredField("_mineChance");
+        fieldMineChance = GameModel.class.getDeclaredField("MINE_CHANCE");
         fieldMineChance.setAccessible(true);
         methodGenerateSquares = GameModel.class.getDeclaredMethod("generateSquares", Point.class);
         methodGenerateSquares.setAccessible(true);
