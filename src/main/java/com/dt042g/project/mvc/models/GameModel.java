@@ -101,7 +101,16 @@ public class GameModel extends Model {
      */
     @Override
     public int getSquareValue(Point location) {
-        throw new UnsupportedOperationException("Not implemented!");
+        if(_board == null || isMine(location))
+            return -1;
+
+        int value = 0;
+
+        for (Point neighbor : getNeighbors(location)) {
+            value += _board.get(neighbor.x).get(neighbor.y).isMine() ? 1 : 0;
+        }
+
+        return value;
     }
 
     /**
