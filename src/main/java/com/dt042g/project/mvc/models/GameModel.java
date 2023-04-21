@@ -146,7 +146,7 @@ public class GameModel extends Model {
      */
     @Override
     public boolean isRevealed(Point location) {
-        throw new UnsupportedOperationException("Not implemented!");
+        return _board != null && _board.get(location.x).get(location.y).isRevealed();
     }
 
     /**

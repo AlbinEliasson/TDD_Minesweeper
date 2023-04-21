@@ -108,4 +108,19 @@ public class GameModelKnownBoardTests {
                         "Square at [%d, %d] (%s) gave incorrect 'isFlagged()' value!",
                         location.x, location.y, boardTemplate[location.x][location.y]));
     }
+
+    /**
+     * Method for checking the isRevealed method to ensure that correct values
+     * are returned.
+     *
+     * @param location Location to check.
+     */
+    @ParameterizedTest
+    @MethodSource("Location")
+    public void test_IsRevealed_CorrectReturn(Point location) {
+        Assertions.assertEquals(boardTemplate[location.x][location.y].charAt(0) == 'R', model.isRevealed(location),
+                String.format(
+                        "Square at [%d, %d] (%s) gave incorrect 'isRevealed()' value!",
+                        location.x, location.y, boardTemplate[location.x][location.y]));
+    }
 }
