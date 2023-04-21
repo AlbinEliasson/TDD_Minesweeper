@@ -101,7 +101,16 @@ public class GameModel extends Model {
      */
     @Override
     public int getSquareValue(Point location) {
-        throw new UnsupportedOperationException("Not implemented!");
+        if(_board == null || isMine(location))
+            return -1;
+
+        int value = 0;
+
+        for (Point neighbor : getNeighbors(location)) {
+            value += _board.get(neighbor.x).get(neighbor.y).isMine() ? 1 : 0;
+        }
+
+        return value;
     }
 
     /**
@@ -113,7 +122,10 @@ public class GameModel extends Model {
      */
     @Override
     public boolean isFlagged(Point location) {
-        throw new UnsupportedOperationException("Not implemented!");
+        if(_board == null)
+            return false;
+
+        return _board.get(location.x).get(location.y).isFlagged();
     }
 
     /**
@@ -143,7 +155,7 @@ public class GameModel extends Model {
      */
     @Override
     public boolean isRevealed(Point location) {
-        throw new UnsupportedOperationException("Not implemented!");
+        return _board != null && _board.get(location.x).get(location.y).isRevealed();
     }
 
     /**
@@ -166,7 +178,10 @@ public class GameModel extends Model {
      */
     @Override
     public void setSquareFlag(Point location, boolean value) {
-        throw new UnsupportedOperationException("Not implemented!");
+        if(_board == null)
+            return;
+
+        _board.get(location.x).get(location.y).setFlagged(value);
     }
 
     /**

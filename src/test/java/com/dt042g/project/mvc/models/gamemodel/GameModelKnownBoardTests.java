@@ -93,4 +93,50 @@ public class GameModelKnownBoardTests {
     public void test_IsMine_CorrectReturn(Point location) {
         Assertions.assertEquals(boardTemplate[location.x][location.y].charAt(1) == 'M', model.isMine(location));
     }
+
+    /**
+     * Method for checking the isFlagged method to ensure that correct values
+     * are returned.
+     *
+     * @param location Location to check.
+     */
+    @ParameterizedTest
+    @MethodSource("Location")
+    public void test_IsFlagged_CorrectReturn(Point location) {
+        Assertions.assertEquals(boardTemplate[location.x][location.y].charAt(0) == 'F', model.isFlagged(location),
+                String.format(
+                        "Square at [%d, %d] (%s) gave incorrect 'isFlagged()' value!",
+                        location.x, location.y, boardTemplate[location.x][location.y]));
+    }
+
+    /**
+     * Method for checking the isRevealed method to ensure that correct values
+     * are returned.
+     *
+     * @param location Location to check.
+     */
+    @ParameterizedTest
+    @MethodSource("Location")
+    public void test_IsRevealed_CorrectReturn(Point location) {
+        Assertions.assertEquals(boardTemplate[location.x][location.y].charAt(0) == 'R', model.isRevealed(location),
+                String.format(
+                        "Square at [%d, %d] (%s) gave incorrect 'isRevealed()' value!",
+                        location.x, location.y, boardTemplate[location.x][location.y]));
+    }
+
+    /**
+     * Method for checking the getSquareValue method to ensure that correct
+     * values are returned.
+     *
+     * @param location Location to check.
+     */
+    @ParameterizedTest
+    @MethodSource("Location")
+    public void test_GetSquareValue_CorrectReturnMine(Point location) {
+        if(boardTemplate[location.x][location.y].charAt(1) == 'M')
+            Assertions.assertEquals(-1, model.getSquareValue(location),
+                    String.format(
+                            "Square at [%d, %d] (%s) gave incorrect 'getSquareValue()' value!",
+                            location.x, location.y, boardTemplate[location.x][location.y]));
+    }
 }

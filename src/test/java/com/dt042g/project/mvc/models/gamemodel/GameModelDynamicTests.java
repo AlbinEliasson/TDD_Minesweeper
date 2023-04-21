@@ -333,4 +333,294 @@ public class GameModelDynamicTests {
 
         Assertions.assertThrows(IndexOutOfBoundsException.class, () -> model.isMine(new Point(Integer.MAX_VALUE, Integer.MAX_VALUE)));
     }
+
+    /**
+     * Method for checking the setSquareFlag method to ensure that correct
+     * values are returned when a valid location is provided.
+     *
+     * @param model The model to use.
+     * @param boardSize The expected size of the board.
+     * @param location The "first location" argument.
+     */
+    @ParameterizedTest
+    @MethodSource("ModelAndLocationGenerated")
+    public void test_SetSquareFlag_LocationValid(GameModel model, int boardSize, Point location) throws InvocationTargetException, IllegalAccessException {
+        methodGenerateSquares.invoke(model, location);
+        List<List<BackingSquare>> board = (List<List<BackingSquare>>) fieldBoard.get(model);
+
+        boolean originalValue = board.get(location.x).get(location.y).isFlagged();
+
+        model.setSquareFlag(location, originalValue);
+        Assertions.assertEquals(originalValue, board.get(location.x).get(location.y).isFlagged());
+
+        model.setSquareFlag(location, !originalValue);
+        Assertions.assertEquals(!originalValue, board.get(location.x).get(location.y).isFlagged());
+
+        model.setSquareFlag(location, !originalValue);
+        Assertions.assertEquals(!originalValue, board.get(location.x).get(location.y).isFlagged());
+
+        model.setSquareFlag(location, originalValue);
+        Assertions.assertEquals(originalValue, board.get(location.x).get(location.y).isFlagged());
+    }
+
+    /**
+     * Method for checking the behaviour of the setSquareFlag method when a null
+     * location is provided.
+     *
+     * @param model The model to use.
+     * @param boardSize The expected size of the board.
+     */
+    @ParameterizedTest
+    @MethodSource("Model")
+    public void test_SetSquareFlag_LocationNull(GameModel model, int boardSize) throws InvocationTargetException, IllegalAccessException {
+        methodGenerateSquares.invoke(model, new Point(0, 0));
+
+        Assertions.assertThrows(NullPointerException.class, () -> model.setSquareFlag(null, true));
+        Assertions.assertThrows(NullPointerException.class, () -> model.setSquareFlag(null, false));
+    }
+
+    /**
+     * Method for checking the behaviour of the setSquareFlag method when a
+     * negative location is provided.
+     *
+     * @param model The model to use.
+     * @param boardSize The expected size of the board.
+     */
+    @ParameterizedTest
+    @MethodSource("Model")
+    public void test_SetSquareFlag_LocationNegative(GameModel model, int boardSize) throws InvocationTargetException, IllegalAccessException {
+        methodGenerateSquares.invoke(model, new Point(0, 0));
+
+        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> model.setSquareFlag(new Point(Integer.MAX_VALUE * -1, Integer.MAX_VALUE * -1), true));
+        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> model.setSquareFlag(new Point(Integer.MAX_VALUE * -1, Integer.MAX_VALUE * -1), false));
+    }
+
+    /**
+     * Method for checking the behaviour of the setSquareFlag method when a OOB
+     * location is provided.
+     *
+     * @param model The model to use.
+     * @param boardSize The expected size of the board.
+     */
+    @ParameterizedTest
+    @MethodSource("Model")
+    public void test_SetSquareFlag_LocationOOB(GameModel model, int boardSize) throws InvocationTargetException, IllegalAccessException {
+        methodGenerateSquares.invoke(model, new Point(0, 0));
+
+        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> model.setSquareFlag(new Point(Integer.MAX_VALUE, Integer.MAX_VALUE), true));
+        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> model.setSquareFlag(new Point(Integer.MAX_VALUE, Integer.MAX_VALUE), false));
+    }
+
+    /**
+     * Method for checking the isFlagged method to ensure that correct values are
+     * returned when a valid location is provided.
+     *
+     * @param model The model to use.
+     * @param boardSize The expected size of the board.
+     * @param location The "first location" argument.
+     */
+    @ParameterizedTest
+    @MethodSource("ModelAndLocationGenerated")
+    public void test_IsFlagged_LocationValid(GameModel model, int boardSize, Point location) throws InvocationTargetException, IllegalAccessException {
+        methodGenerateSquares.invoke(model, location);
+        List<List<BackingSquare>> board = (List<List<BackingSquare>>) fieldBoard.get(model);
+
+        boolean originalRealValue = board.get(location.x).get(location.y).isFlagged();
+        Assertions.assertEquals(originalRealValue, model.isFlagged(location));
+
+        board.get(location.x).get(location.y).setFlagged(!originalRealValue);
+        Assertions.assertEquals(!originalRealValue, model.isFlagged(location));
+    }
+
+    /**
+     * Method for checking the behaviour of the isFlagged method when a null
+     * location is provided.
+     *
+     * @param model The model to use.
+     * @param boardSize The expected size of the board.
+     */
+    @ParameterizedTest
+    @MethodSource("Model")
+    public void test_IsFlagged_LocationNull(GameModel model, int boardSize) throws InvocationTargetException, IllegalAccessException {
+        methodGenerateSquares.invoke(model, new Point(0, 0));
+
+        Assertions.assertThrows(NullPointerException.class, () -> model.isFlagged(null));
+    }
+
+    /**
+     * Method for checking the behaviour of the isFlagged method when a negative
+     * location is provided.
+     *
+     * @param model The model to use.
+     * @param boardSize The expected size of the board.
+     */
+    @ParameterizedTest
+    @MethodSource("Model")
+    public void test_IsFlagged_LocationNegative(GameModel model, int boardSize) throws InvocationTargetException, IllegalAccessException {
+        methodGenerateSquares.invoke(model, new Point(0, 0));
+
+        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> model.isFlagged(new Point(Integer.MAX_VALUE * -1, Integer.MAX_VALUE * -1)));
+    }
+
+    /**
+     * Method for checking the behaviour of the isFlagged method when a OOB
+     * location is provided.
+     *
+     * @param model The model to use.
+     * @param boardSize The expected size of the board.
+     */
+    @ParameterizedTest
+    @MethodSource("Model")
+    public void test_IsFlagged_LocationOOB(GameModel model, int boardSize) throws InvocationTargetException, IllegalAccessException {
+        methodGenerateSquares.invoke(model, new Point(0, 0));
+
+        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> model.isFlagged(new Point(Integer.MAX_VALUE, Integer.MAX_VALUE)));
+    }
+
+    /**
+     * Method for checking the isRevealed method to ensure that correct values are
+     * returned when a valid location is provided.
+     *
+     * @param model The model to use.
+     * @param boardSize The expected size of the board.
+     * @param location The "first location" argument.
+     */
+    @ParameterizedTest
+    @MethodSource("ModelAndLocationGenerated")
+    public void test_IsRevealed_LocationValid(GameModel model, int boardSize, Point location) throws InvocationTargetException, IllegalAccessException {
+        methodGenerateSquares.invoke(model, location);
+        List<List<BackingSquare>> board = (List<List<BackingSquare>>) fieldBoard.get(model);
+
+        boolean originalRealValue = board.get(location.x).get(location.y).isRevealed();
+        Assertions.assertEquals(originalRealValue, model.isRevealed(location));
+
+        board.get(location.x).get(location.y).setRevealed(!originalRealValue);
+        Assertions.assertEquals(!originalRealValue, model.isRevealed(location));
+    }
+
+    /**
+     * Method for checking the behaviour of the isRevealed method when a null
+     * location is provided.
+     *
+     * @param model The model to use.
+     * @param boardSize The expected size of the board.
+     */
+    @ParameterizedTest
+    @MethodSource("Model")
+    public void test_IsRevealed_LocationNull(GameModel model, int boardSize) throws InvocationTargetException, IllegalAccessException {
+        methodGenerateSquares.invoke(model, new Point(0, 0));
+
+        Assertions.assertThrows(NullPointerException.class, () -> model.isRevealed(null));
+    }
+
+    /**
+     * Method for checking the behaviour of the isRevealed method when a
+     * negative location is provided.
+     *
+     * @param model The model to use.
+     * @param boardSize The expected size of the board.
+     */
+    @ParameterizedTest
+    @MethodSource("Model")
+    public void test_IsRevealed_LocationNegative(GameModel model, int boardSize) throws InvocationTargetException, IllegalAccessException {
+        methodGenerateSquares.invoke(model, new Point(0, 0));
+
+        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> model.isRevealed(new Point(Integer.MAX_VALUE * -1, Integer.MAX_VALUE * -1)));
+    }
+
+    /**
+     * Method for checking the behaviour of the isRevealed method when a OOB
+     * location is provided.
+     *
+     * @param model The model to use.
+     * @param boardSize The expected size of the board.
+     */
+    @ParameterizedTest
+    @MethodSource("Model")
+    public void test_IsRevealed_LocationOOB(GameModel model, int boardSize) throws InvocationTargetException, IllegalAccessException {
+        methodGenerateSquares.invoke(model, new Point(0, 0));
+
+        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> model.isRevealed(new Point(Integer.MAX_VALUE, Integer.MAX_VALUE)));
+    }
+
+    /**
+     * Method for checking the getSquareValue method to ensure that correct
+     * values are returned when a valid location is provided.
+     *
+     * @param model The model to use.
+     * @param boardSize The expected size of the board.
+     * @param location The "first location" argument.
+     */
+    @ParameterizedTest
+    @MethodSource("ModelAndLocationGenerated")
+    public void test_GetSquareValue_LocationValid(GameModel model, int boardSize, Point location) throws InvocationTargetException, IllegalAccessException {
+        methodGenerateSquares.invoke(model, location);
+        List<List<BackingSquare>> board = (List<List<BackingSquare>>) fieldBoard.get(model);
+
+        int value = 0;
+
+        if(location.x > 0)
+            value += board.get(location.x - 1).get(location.y).isMine() ? 1 : 0; // West
+        if(location.x < boardSize - 1)
+            value += board.get(location.x + 1).get(location.y).isMine() ? 1 : 0; // East
+        if(location.y > 0)
+            value += board.get(location.x).get(location.y - 1).isMine() ? 1 : 0; // North
+        if(location.y < boardSize - 1)
+            value += board.get(location.x).get(location.y + 1).isMine() ? 1 : 0; // South
+        if(location.x > 0 && location.y > 0)
+            value += board.get(location.x - 1).get(location.y - 1).isMine() ? 1 : 0; // North-west
+        if(location.x < boardSize - 1 && location.y < boardSize - 1)
+            value += board.get(location.x + 1).get(location.y + 1).isMine() ? 1 : 0; // South-east
+        if(location.x > 0 && location.y < boardSize - 1)
+            value += board.get(location.x - 1).get(location.y + 1).isMine() ? 1 : 0; // South-west
+        if(location.x < boardSize - 1 && location.y > 0)
+            value += board.get(location.x + 1).get(location.y - 1).isMine() ? 1 : 0; // North-east
+
+        Assertions.assertEquals(value, model.getSquareValue(location));
+    }
+
+    /**
+     * Method for checking the behaviour of the getSquareValue method when a
+     * null location is provided.
+     *
+     * @param model The model to use.
+     * @param boardSize The expected size of the board.
+     */
+    @ParameterizedTest
+    @MethodSource("Model")
+    public void test_GetSquareValue_LocationNull(GameModel model, int boardSize) throws InvocationTargetException, IllegalAccessException {
+        methodGenerateSquares.invoke(model, new Point(0, 0));
+
+        Assertions.assertThrows(NullPointerException.class, () -> model.getSquareValue(null));
+    }
+
+    /**
+     * Method for checking the behaviour of the getSquareValue method when a
+     * negative location is provided.
+     *
+     * @param model The model to use.
+     * @param boardSize The expected size of the board.
+     */
+    @ParameterizedTest
+    @MethodSource("Model")
+    public void test_GetSquareValue_LocationNegative(GameModel model, int boardSize) throws InvocationTargetException, IllegalAccessException {
+        methodGenerateSquares.invoke(model, new Point(0, 0));
+
+        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> model.getSquareValue(new Point(Integer.MAX_VALUE * -1, Integer.MAX_VALUE * -1)));
+    }
+
+    /**
+     * Method for checking the behaviour of the getSquareValue method when a OOB
+     * location is provided.
+     *
+     * @param model The model to use.
+     * @param boardSize The expected size of the board.
+     */
+    @ParameterizedTest
+    @MethodSource("Model")
+    public void test_GetSquareValue_LocationOOB(GameModel model, int boardSize) throws InvocationTargetException, IllegalAccessException {
+        methodGenerateSquares.invoke(model, new Point(0, 0));
+
+        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> model.getSquareValue(new Point(Integer.MAX_VALUE, Integer.MAX_VALUE)));
+    }
 }
