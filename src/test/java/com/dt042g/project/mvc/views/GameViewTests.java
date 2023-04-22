@@ -7,8 +7,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JPanel;
+import java.awt.Point;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -95,8 +95,7 @@ public class GameViewTests {
      */
     @Test
     public void test_CalculateSquareBoardPosition_ValidatePositions() throws InvocationTargetException, IllegalAccessException {
-        for (int i = 0; i < boardPositions.size(); i++) {
-
+        for (int i = 0; i < boardSize * boardSize; i++) {
             Point resultPosition = (Point) calculateSquarePosition.invoke(gameView, i, boardSize);
 
             Assertions.assertEquals(boardPositions.get(i), resultPosition);
@@ -116,6 +115,8 @@ public class GameViewTests {
         selectSquare.invoke(gameView, square, position);
 
         Mockito.verify(gameView, Mockito.times(1)).pushSelectEvent(position);
+        Mockito.verify(gameView, Mockito.times(0)).pushFlagEvent(position);
+        Mockito.verify(gameView, Mockito.times(0)).pushResetGameEvent();
     }
 
     /**
@@ -130,6 +131,8 @@ public class GameViewTests {
         selectSquare.invoke(gameView, square, position);
 
         Mockito.verify(gameView, Mockito.times(0)).pushSelectEvent(position);
+        Mockito.verify(gameView, Mockito.times(0)).pushFlagEvent(position);
+        Mockito.verify(gameView, Mockito.times(0)).pushResetGameEvent();
     }
 
     /**
@@ -146,6 +149,8 @@ public class GameViewTests {
         selectSquare.invoke(gameView, square, position);
 
         Mockito.verify(gameView, Mockito.times(0)).pushSelectEvent(position);
+        Mockito.verify(gameView, Mockito.times(0)).pushFlagEvent(position);
+        Mockito.verify(gameView, Mockito.times(0)).pushResetGameEvent();
     }
 
     /**
@@ -156,12 +161,14 @@ public class GameViewTests {
     public void test_SelectSquare_BoardLocked() throws IllegalAccessException, InvocationTargetException {
         JPanel boardPanel = (JPanel) boardField.get(gameView);
         Square square = (Square) boardPanel.getComponent(0);
-        boardLockedField.setBoolean(gameView,true);
+        boardLockedField.setBoolean(gameView, true);
         Point position = (Point) calculateSquarePosition.invoke(gameView, 0, boardSize);
 
         selectSquare.invoke(gameView, square, position);
 
         Mockito.verify(gameView, Mockito.times(0)).pushSelectEvent(position);
+        Mockito.verify(gameView, Mockito.times(0)).pushFlagEvent(position);
+        Mockito.verify(gameView, Mockito.times(0)).pushResetGameEvent();
     }
 
     /**
@@ -177,6 +184,8 @@ public class GameViewTests {
         flagSquare.invoke(gameView, square, position);
 
         Mockito.verify(gameView, Mockito.times(1)).pushFlagEvent(position);
+        Mockito.verify(gameView, Mockito.times(0)).pushSelectEvent(position);
+        Mockito.verify(gameView, Mockito.times(0)).pushResetGameEvent();
     }
 
     /**
@@ -191,6 +200,8 @@ public class GameViewTests {
         flagSquare.invoke(gameView, square, position);
 
         Mockito.verify(gameView, Mockito.times(0)).pushFlagEvent(position);
+        Mockito.verify(gameView, Mockito.times(0)).pushSelectEvent(position);
+        Mockito.verify(gameView, Mockito.times(0)).pushResetGameEvent();
     }
 
     /**
@@ -207,6 +218,8 @@ public class GameViewTests {
         flagSquare.invoke(gameView, square, position);
 
         Mockito.verify(gameView, Mockito.times(0)).pushFlagEvent(position);
+        Mockito.verify(gameView, Mockito.times(0)).pushSelectEvent(position);
+        Mockito.verify(gameView, Mockito.times(0)).pushResetGameEvent();
     }
 
     /**
@@ -223,5 +236,7 @@ public class GameViewTests {
         flagSquare.invoke(gameView, square, position);
 
         Mockito.verify(gameView, Mockito.times(0)).pushFlagEvent(position);
+        Mockito.verify(gameView, Mockito.times(0)).pushSelectEvent(position);
+        Mockito.verify(gameView, Mockito.times(0)).pushResetGameEvent();
     }
 }

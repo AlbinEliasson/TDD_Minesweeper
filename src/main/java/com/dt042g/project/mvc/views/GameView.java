@@ -2,8 +2,11 @@ package com.dt042g.project.mvc.views;
 
 import com.dt042g.project.mvc.views.gui.Square;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import java.awt.Dimension;
+import java.awt.GridLayout;
+import java.awt.Point;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -17,8 +20,8 @@ public class GameView extends View {
     private final int _GAME_HEIGHT = 600;
     private final int _boardSize;
     private boolean _boardLocked = false;
-    private final JFrame _frame = new JFrame();
-    private final JPanel _board = new JPanel();
+    private JFrame _frame;
+    private JPanel _board;
 
     /**
      * Constructor to initialize and show the GUI with the provided board size.
@@ -32,7 +35,7 @@ public class GameView extends View {
     /**
      * Method to initialize and show the GUI components.
      */
-    public void createAndShowGUI() {
+    private void createAndShowGUI() {
         initializeBoard();
         initializeFrame();
     }
@@ -41,14 +44,14 @@ public class GameView extends View {
      * Method to initialize the frame window of the game.
      */
     private void initializeFrame() {
+        _frame = new JFrame();
         _frame.add(_board);
-        _frame.validate();
-        _frame.pack();
         _frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         _frame.setResizable(false);
-        _frame.setLocationRelativeTo(null);
         _frame.setTitle("Minesweeper");
         _frame.setVisible(true);
+        _frame.pack();
+        _frame.setLocationRelativeTo(null);
     }
 
     /**
@@ -56,11 +59,12 @@ public class GameView extends View {
      * the Views pushSelectEvent and pushFlagEvent methods.
      */
     private void initializeBoard() {
+        _board = new JPanel();
         _board.setPreferredSize(new Dimension(_GAME_WIDTH, _GAME_HEIGHT));
         _board.setLayout(new GridLayout(_boardSize, _boardSize, 0, 0));
 
         for (int i = 0; i < (_boardSize * _boardSize); i++) {
-            int boardIndex = i;
+            final int boardIndex = i;
             Square square = new Square();
             square.addMouseListener(new MouseAdapter() {
                 @Override
@@ -96,10 +100,8 @@ public class GameView extends View {
      * @param location the point location of the square in the board
      */
     private void selectSquare(final Square square, final Point location) {
-        if (square != null) {
-            if (!_boardLocked && square.getState() == Square.State.HIDDEN) {
-                pushSelectEvent(location);
-            }
+        if (square != null && !_boardLocked && square.getState() == Square.State.HIDDEN) {
+            pushSelectEvent(location);
         }
     }
 
@@ -110,10 +112,8 @@ public class GameView extends View {
      * @param location the point location of the square in the board
      */
     private void flagSquare(final Square square, final Point location) {
-        if (square != null) {
-            if (!_boardLocked && square.getState() != Square.State.VALUE) {
-                pushFlagEvent(location);
-            }
+        if (square != null && !_boardLocked && square.getState() != Square.State.VALUE) {
+            pushFlagEvent(location);
         }
     }
 
