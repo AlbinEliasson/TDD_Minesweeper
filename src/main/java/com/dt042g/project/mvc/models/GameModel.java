@@ -166,7 +166,62 @@ public class GameModel extends Model {
      */
     @Override
     public void selectSquare(Point location) {
-        throw new UnsupportedOperationException("Not implemented!");
+        if(_board == null)
+            generateSquares(location);
+
+        if(isRevealed(location) || isFlagged(location))
+            return;
+
+        if(isMine(location)) {
+            pushMineHitEvent(location);
+            return;
+        }
+
+        List<Point> locations = findAndRevealZeroValueNeighbors(location);
+        pushRevealSquareEvent(locations);
+    }
+
+    /**
+     * Method for getting (and revealing) all "zero-value" related (recursive)
+     * neighbors of a square.
+     *
+     * This method checks the provided location to see if it is zero. If it is,
+     * then all of its neighbors are included. Then it checks each of the
+     * neighbors for zero-value squares. If one is found, the method recurses to
+     * also include its neighbors and to again look for zero-value neighbors.
+     *
+     * The result being the original location, plus any "zero-value" related
+     * squares. This is used when revealing squares, to give the player extra
+     * vision by automatically revealing zero-value squares.
+     *
+     * @param location The original location.
+     *
+     * @return All zero-value related squares.
+     */
+    private List<Point> findAndRevealZeroValueNeighbors(Point location) {
+        List<Point> locations = new ArrayList<>();
+
+        // Don't check already revealed squares, flagged squares and mines.
+        if(isRevealed(location) || isFlagged(location) || isMine(location))
+            return locations;
+
+        // Set the current square to revealed, since it is to be shown. But also
+        // to avoid infinite recursion loops. So be careful if you are making
+        // modifications to this.
+        _board.get(location.x).get(location.y).setRevealed(true);
+        locations.add(location);
+
+        // Check if the current square is zero
+        if(getSquareValue(location) == 0) {
+            // If so recurse for each neighbor, and check for their zero value
+            // neighbors. Note that this also adds all the current squares
+            // neighbors to the "locations" list, since this method at a minimum
+            // returns the original provided location.
+            for(Point neighbor : getNeighbors(location))
+                locations.addAll(findAndRevealZeroValueNeighbors(neighbor));
+        }
+
+        return locations;
     }
 
     /**

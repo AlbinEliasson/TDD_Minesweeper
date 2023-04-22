@@ -7,12 +7,14 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 
 import java.awt.Point;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
@@ -622,5 +624,182 @@ public class GameModelDynamicTests {
         methodGenerateSquares.invoke(model, new Point(0, 0));
 
         Assertions.assertThrows(IndexOutOfBoundsException.class, () -> model.getSquareValue(new Point(Integer.MAX_VALUE, Integer.MAX_VALUE)));
+    }
+
+    /**
+     * Method for testing the selectSquare method to ensure that the board is
+     * automatically generated if it does not exist upon method call.
+     *
+     * @param model The model to use.
+     * @param boardSize The expected size of the board.
+     */
+    @ParameterizedTest
+    @MethodSource("Model")
+    public void test_SelectSquare_LocationValid_EnsureGeneration(GameModel model, int boardSize) throws IllegalAccessException {
+        List<List<BackingSquare>> board = (List<List<BackingSquare>>) fieldBoard.get(model);
+
+        // Check that the board is null to start with; since if it isn't this
+        // test would be useless; since it wouldn't have to trigger generation.
+        // This could change in the future; but as it stands now, a first
+        // location is needed to generate the squares. And since the model is
+        // freshly generated for each iteration of this test; the board already
+        // existing at this stage would mean a bug.
+        Assertions.assertNull(board, "Board already exists; cannot test selectSquare automatic generation!");
+
+        Assertions.assertDoesNotThrow(() -> model.selectSquare(new Point(0, 0)), "Board generation test failed due to selectSquare method throwing an error!");
+
+        board = (List<List<BackingSquare>>) fieldBoard.get(model);
+
+        Assertions.assertNotNull(board, "Board not generated!");
+    }
+
+    /**
+     * Method for checking the selectSquare method to ensure that correct
+     * values events are pushed when a valid location is provided.
+     *
+     * @param model The model to use.
+     * @param boardSize The expected size of the board.
+     * @param location The "first location" argument.
+     */
+    @ParameterizedTest
+    @MethodSource("ModelAndLocationGenerated")
+    public void test_SelectSquare_LocationValid_EnsureEvents(GameModel model, int boardSize, Point location) {
+        Mockito.clearInvocations(model);
+
+        boolean originalIsRevealed = model.isRevealed(location);
+
+        model.selectSquare(location);
+
+        if(originalIsRevealed || model.isFlagged(location)) {
+            Mockito.verify(model, Mockito.times(0).description("Invalid number of MineHit events when calling on revealed/flagged square; expected 0!")).pushMineHitEvent(Mockito.any());
+            Mockito.verify(model, Mockito.times(0).description("Invalid number of RevealSquare events when calling on revealed/flagged square; expected 0!")).pushRevealSquareEvent(Mockito.anyList());
+        } else if(model.isMine(location)) {
+            Mockito.verify(model, Mockito.times(1).description("Invalid number of MineHit events when calling on mine square; expected 1!")).pushMineHitEvent(Mockito.any());
+            Mockito.verify(model, Mockito.times(0).description("Invalid number of RevealSquare events when calling on mine square; expected 0!")).pushRevealSquareEvent(Mockito.anyList());
+        } else {
+            Mockito.verify(model, Mockito.times(0).description("Invalid number of MineHit events when calling on value square; expected 0!")).pushMineHitEvent(Mockito.any());
+            Mockito.verify(model, Mockito.times(1).description("Invalid number of RevealSquare events when calling on value square; expected 1!")).pushRevealSquareEvent(Mockito.anyList());
+        }
+    }
+
+    /**
+     * Method for checking the selectSquare method to ensure that correct
+     * squares are revealed when a valid location is provided.
+     *
+     * It tests to ensure that all revealed squares are in some way connected to
+     * the original location. Either by being the original square, or by being
+     * connected to it via a zero-value square.
+     *
+     * @param model The model to use.
+     * @param boardSize The expected size of the board.
+     * @param location The "first location" argument.
+     */
+    @ParameterizedTest
+    @MethodSource("ModelAndLocationGenerated")
+    public void test_SelectSquare_LocationValid_ValidateRevealConnections(GameModel model, int boardSize, Point location) {
+        if(model.isRevealed(location) || model.isFlagged(location) || model.isMine(location))
+            return;
+
+        Mockito.clearInvocations(model);
+
+        ArgumentCaptor<List<Point>> reveals = ArgumentCaptor.forClass(List.class);
+
+        model.selectSquare(location);
+        Mockito.verify(model).pushRevealSquareEvent(reveals.capture());
+
+        List<Point> connectedSquares = new ArrayList<>();
+        connectedSquares.add(location);
+
+        for(Point revealed : reveals.getValue()) {
+            Point foundConnected = helper_CheckPointConnection(revealed, connectedSquares);
+            if(
+                    foundConnected != null &&
+                            (
+                                    location == foundConnected ||
+                                            model.getSquareValue(location) == 0 ||
+                                            model.getSquareValue(foundConnected) == 0
+                            )
+            )
+                connectedSquares.add(revealed);
+            else
+                Assertions.fail(String.format(
+                        "Square at (%d, %d) is not properly connected to location (%d, %d) or to a neighbor that is connected to location.",
+                        revealed.x, revealed.y, location.x, location.y));
+        }
+    }
+
+    /**
+     * Method for checking if a location is connected to any location in a set.
+     *
+     * @param subject The location to check
+     * @param locations The set of locations to check connection to.
+     *
+     * @return Whether the locations are connected.
+     */
+    private Point helper_CheckPointConnection(Point subject, List<Point> locations) {
+        for(Point location : locations)
+            if(subject == location || helper_PointIsNeighbor(subject, location))
+                return location;
+
+        return null;
+    }
+
+    /**
+     * Method for checking of two locations are next to each other.
+     *
+     * @param locationA The first location.
+     * @param locationB The second location.
+     *
+     * @return Whether the two locations are neighbors.
+     */
+    private boolean helper_PointIsNeighbor(Point locationA, Point locationB) {
+        int differenceX = Math.abs(locationA.x - locationB.x);
+        int differenceY = Math.abs(locationA.y - locationB.y);
+        return differenceX <= 1 && differenceY <= 1 && (differenceX + differenceY) != 0;
+    }
+
+    /**
+     * Method for checking the behaviour of the selectSquare method when a
+     * null location is provided.
+     *
+     * @param model The model to use.
+     * @param boardSize The expected size of the board.
+     */
+    @ParameterizedTest
+    @MethodSource("Model")
+    public void test_SelectSquare_LocationNull(GameModel model, int boardSize) throws InvocationTargetException, IllegalAccessException {
+        methodGenerateSquares.invoke(model, new Point(0, 0));
+
+        Assertions.assertThrows(NullPointerException.class, () -> model.selectSquare(null));
+    }
+
+    /**
+     * Method for checking the behaviour of the selectSquare method when a
+     * negative location is provided.
+     *
+     * @param model The model to use.
+     * @param boardSize The expected size of the board.
+     */
+    @ParameterizedTest
+    @MethodSource("Model")
+    public void test_SelectSquare_LocationNegative(GameModel model, int boardSize) throws InvocationTargetException, IllegalAccessException {
+        methodGenerateSquares.invoke(model, new Point(0, 0));
+
+        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> model.selectSquare(new Point(Integer.MAX_VALUE * -1, Integer.MAX_VALUE * -1)));
+    }
+
+    /**
+     * Method for checking the behaviour of the selectSquare method when a OOB
+     * location is provided.
+     *
+     * @param model The model to use.
+     * @param boardSize The expected size of the board.
+     */
+    @ParameterizedTest
+    @MethodSource("Model")
+    public void test_SelectSquare_LocationOOB(GameModel model, int boardSize) throws InvocationTargetException, IllegalAccessException {
+        methodGenerateSquares.invoke(model, new Point(0, 0));
+
+        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> model.selectSquare(new Point(Integer.MAX_VALUE, Integer.MAX_VALUE)));
     }
 }
