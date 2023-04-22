@@ -5,9 +5,12 @@ import com.dt042g.project.mvc.models.GameModel;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Mockito;
 
 import java.awt.Point;
 import java.lang.reflect.Field;
@@ -67,7 +70,7 @@ public class GameModelKnownBoardTests {
      */
     @BeforeEach
     public void setupEach() throws IllegalAccessException {
-        model = new GameModel(boardTemplate.length);
+        model = Mockito.spy(new GameModel(boardTemplate.length));
 
         // Parse board template into backing squares
         List<List<BackingSquare>> board = Arrays.stream(boardTemplate)
@@ -138,5 +141,83 @@ public class GameModelKnownBoardTests {
                     String.format(
                             "Square at [%d, %d] (%s) gave incorrect 'getSquareValue()' value!",
                             location.x, location.y, boardTemplate[location.x][location.y]));
+    }
+
+    /**
+     * Method for checking the selectSquare method to ensure that correct
+     * events are triggered.
+     *
+     * @param location Location to check.
+     */
+    @ParameterizedTest
+    @MethodSource("Location")
+    public void test_SelectSquare_EnsureEvents(Point location) {
+        model.selectSquare(location);
+
+        if(
+                boardTemplate[location.x][location.y].charAt(0) == 'R' ||
+                        boardTemplate[location.x][location.y].charAt(0) == 'F'
+        ) {
+            Mockito.verify(model, Mockito.times(0).description("Invalid number of MineHit events when calling on revealed/flagged square; expected 0!")).pushMineHitEvent(Mockito.any());
+            Mockito.verify(model, Mockito.times(0).description("Invalid number of RevealSquare events when calling on revealed/flagged square; expected 0!")).pushRevealSquareEvent(Mockito.anyList());
+        } else if(boardTemplate[location.x][location.y].charAt(1) == 'M') {
+            Mockito.verify(model, Mockito.times(1).description("Invalid number of MineHit events when calling on mine square; expected 1!")).pushMineHitEvent(Mockito.any());
+            Mockito.verify(model, Mockito.times(0).description("Invalid number of RevealSquare events when calling on mine square; expected 0!")).pushRevealSquareEvent(Mockito.anyList());
+        } else {
+            Mockito.verify(model, Mockito.times(0).description("Invalid number of MineHit events when calling on value square; expected 0!")).pushMineHitEvent(Mockito.any());
+            Mockito.verify(model, Mockito.times(1).description("Invalid number of RevealSquare events when calling on value square; expected 1!")).pushRevealSquareEvent(Mockito.anyList());
+        }
+    }
+
+    /**
+     * Method for checking the selectSquare method to ensure that correct
+     * squares are revealed.
+     */
+    @Test
+    public void test_SelectSquare_ValidateRevealConnections_A() {
+        ArgumentCaptor<List<Point>> reveals = ArgumentCaptor.forClass(List.class);
+
+        model.selectSquare(new Point(0, 1));
+        Mockito.verify(model).pushRevealSquareEvent(reveals.capture());
+
+        Assertions.assertEquals(List.of(new Point(0, 1)), reveals.getValue());
+    }
+
+    /**
+     * Method for checking the selectSquare method to ensure that correct
+     * squares are revealed.
+     */
+    @Test
+    public void test_SelectSquare_ValidateRevealConnections_B() {
+        ArgumentCaptor<List<Point>> reveals = ArgumentCaptor.forClass(List.class);
+
+        model.selectSquare(new Point(0, 0));
+        Mockito.verify(model).pushRevealSquareEvent(reveals.capture());
+
+        List<Point> expected = List.of(
+                new Point(0, 0), new Point(0, 1),
+                new Point(1, 0), new Point(1, 1));
+
+        Assertions.assertTrue(reveals.getValue().containsAll(expected));
+        Assertions.assertEquals(expected.size(), reveals.getValue().size());
+    }
+
+    /**
+     * Method for checking the selectSquare method to ensure that correct
+     * squares are revealed.
+     */
+    @Test
+    public void test_SelectSquare_ValidateRevealConnections_C() {
+        ArgumentCaptor<List<Point>> reveals = ArgumentCaptor.forClass(List.class);
+
+        model.selectSquare(new Point(4, 0));
+        Mockito.verify(model).pushRevealSquareEvent(reveals.capture());
+
+        List<Point> expected = List.of(
+                new Point(4, 0), new Point(4, 1), new Point(4, 2),
+                new Point(3, 0), new Point(3, 1));
+
+        Assertions.assertTrue(reveals.getValue().containsAll(expected));
+        Assertions.assertEquals(expected.size(), reveals.getValue().size());
     }
 }
