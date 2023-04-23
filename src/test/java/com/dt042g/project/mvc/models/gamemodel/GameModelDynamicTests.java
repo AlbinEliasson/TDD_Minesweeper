@@ -802,4 +802,42 @@ public class GameModelDynamicTests {
 
         Assertions.assertThrows(IndexOutOfBoundsException.class, () -> model.selectSquare(new Point(Integer.MAX_VALUE, Integer.MAX_VALUE)));
     }
+
+    /**
+     * Method for checking the behaviour of the reset method when a board
+     * exists.
+     *
+     * @param model The model to use.
+     * @param boardSize The expected size of the board.
+     */
+    @ParameterizedTest
+    @MethodSource("Model")
+    public void test_Reset_BoardExists(GameModel model, int boardSize) throws InvocationTargetException, IllegalAccessException {
+        methodGenerateSquares.invoke(model, new Point(0, 0));
+
+        Assertions.assertNotNull(fieldBoard.get(model), "Unable to test reset method; board was null before reset!");
+
+        model.reset();
+
+        Assertions.assertNull(fieldBoard.get(model), "Failed to reset board; board still exists after call!");
+    }
+
+    /**
+     * Method for checking the behaviour of the reset method when a board
+     * does not exist.
+     *
+     * @param model The model to use.
+     * @param boardSize The expected size of the board.
+     */
+    @ParameterizedTest
+    @MethodSource("Model")
+    public void test_Reset_NoBoard(GameModel model, int boardSize) throws InvocationTargetException, IllegalAccessException {
+        // Call method twice first to actually delete the board if it exists,
+        // and the second time to check behaviour when resetting with null
+        // board.
+        Assertions.assertDoesNotThrow(model::reset);
+        Assertions.assertDoesNotThrow(model::reset);
+
+        Assertions.assertNull(fieldBoard.get(model), "Failed to reset board; board still exists after call!");
+    }
 }
