@@ -1,0 +1,175 @@
+package com.dt042g.project.mvc.views;
+
+import com.dt042g.project.mvc.views.gui.Square;
+
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import java.awt.Dimension;
+import java.awt.GridLayout;
+import java.awt.Point;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+
+/**
+ * The game view component containing a concrete implementation of a View.
+ *
+ * @author Martin K. Herkules (makr1906) & Albin Eliasson (alel2104)
+ */
+public class GameView extends View {
+    private final int _GAME_WIDTH = 600;
+    private final int _GAME_HEIGHT = 600;
+    private final int _boardSize;
+    private boolean _boardLocked = false;
+    private JFrame _frame;
+    private JPanel _board;
+
+    /**
+     * Constructor to initialize and show the GUI with the provided board size.
+     * @param boardSize the board size
+     */
+    public GameView(final int boardSize) {
+        _boardSize = boardSize;
+        createAndShowGUI();
+    }
+
+    /**
+     * Method to initialize and show the GUI components.
+     */
+    private void createAndShowGUI() {
+        initializeBoard();
+        initializeFrame();
+    }
+
+    /**
+     * Method to initialize the frame window of the game.
+     */
+    private void initializeFrame() {
+        _frame = new JFrame();
+        _frame.add(_board);
+        _frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        _frame.setResizable(false);
+        _frame.setTitle("Minesweeper");
+        _frame.setVisible(true);
+        _frame.pack();
+        _frame.setLocationRelativeTo(null);
+    }
+
+    /**
+     * Method to initialize the board containing the square GUI components with mouse-listeners to call
+     * the Views pushSelectEvent and pushFlagEvent methods.
+     */
+    private void initializeBoard() {
+        _board = new JPanel();
+        _board.setPreferredSize(new Dimension(_GAME_WIDTH, _GAME_HEIGHT));
+        _board.setLayout(new GridLayout(_boardSize, _boardSize, 0, 0));
+
+        for (int i = 0; i < (_boardSize * _boardSize); i++) {
+            final int boardIndex = i;
+            Square square = new Square();
+            square.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mousePressed(final MouseEvent mouseEvent) {
+                    Point location = calculateSquareBoardPosition(boardIndex, _boardSize);
+
+                    if (mouseEvent.getButton() == MouseEvent.BUTTON1) {
+                        selectSquare(square, location);
+
+                    } else if (mouseEvent.getButton() == MouseEvent.BUTTON3) {
+                        flagSquare(square, location);
+                    }
+                }
+            });
+            _board.add(square);
+        }
+    }
+
+    /**
+     * Method for calculating the point position (X and Y), of a chosen square in the board.
+     * @param boardIndex the board index of the chosen square (0 is the first square, 1 is the second, etc...)
+     * @param boardSize the size of the board
+     * @return the point position of the square
+     */
+    private Point calculateSquareBoardPosition(final int boardIndex, final int boardSize) {
+        return new Point(boardIndex % boardSize, boardIndex / boardSize);
+    }
+
+    /**
+     * Method for checking if the board is not in locked mode (game is over or won) and a square has not yet
+     * been selected (its state is hidden), to call the View push select event.
+     * @param square the square selected for select event pushing
+     * @param location the point location of the square in the board
+     */
+    private void selectSquare(final Square square, final Point location) {
+        if (square != null && !_boardLocked && square.getState() == Square.State.HIDDEN) {
+            pushSelectEvent(location);
+        }
+    }
+
+    /**
+     * Method for checking if the board is not in locked mode (game is over or won) and a square has not yet
+     * been selected (its state is not value), to call the View push flag event.
+     * @param square the square selected for flag event pushing
+     * @param location the point location of the square in the board
+     */
+    private void flagSquare(final Square square, final Point location) {
+        if (square != null && !_boardLocked && square.getState() != Square.State.VALUE) {
+            pushFlagEvent(location);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setHidden(final Point location) {
+        throw new UnsupportedOperationException("Not implemented!");
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setFlagged(final Point location) {
+        throw new UnsupportedOperationException("Not implemented!");
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setValue(final Point location, final int value) {
+        throw new UnsupportedOperationException("Not implemented!");
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setMine(final Point location) {
+        throw new UnsupportedOperationException("Not implemented!");
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void gameOver(final Point location) {
+        throw new UnsupportedOperationException("Not implemented!");
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void win() {
+        throw new UnsupportedOperationException("Not implemented!");
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void reset() {
+        throw new UnsupportedOperationException("Not implemented!");
+    }
+}
