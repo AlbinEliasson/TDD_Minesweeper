@@ -186,7 +186,7 @@ public class GameViewTests {
 
         Mockito.verify(gameView, Mockito.times(1)).pushFlagEvent(Mockito.any());
         Mockito.verify(gameView, Mockito.times(1)).pushFlagEvent(position);
-        Mockito.verify(gameView, Mockito.times(0)).pushSelectEvent(position);
+        Mockito.verify(gameView, Mockito.times(0)).pushSelectEvent(Mockito.any());
         Mockito.verify(gameView, Mockito.times(0)).pushResetGameEvent();
     }
 
