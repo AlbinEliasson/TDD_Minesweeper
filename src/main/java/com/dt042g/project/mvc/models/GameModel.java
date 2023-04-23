@@ -244,6 +244,6 @@ public class GameModel extends Model {
      */
     @Override
     public void reset() {
-        throw new UnsupportedOperationException("Not implemented!");
+        _board = null;
     }
 }
