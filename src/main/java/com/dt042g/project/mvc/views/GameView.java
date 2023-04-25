@@ -118,11 +118,27 @@ public class GameView extends View {
     }
 
     /**
+     * Method for accessing a square in the board from a point location.
+     * @param location the point location
+     * @return the square
+     */
+    private Square getSquareFromPosition(final Point location) {
+        if (location == null || location.x < 0 || location.x >= _boardSize || location.y < 0 || location.y >= _boardSize) {
+            return null;
+        }
+        return (Square) _board.getComponent((_boardSize * location.y) + location.x);
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
     public void setHidden(final Point location) {
-        throw new UnsupportedOperationException("Not implemented!");
+        Square square = getSquareFromPosition(location);
+
+        if (square != null) {
+            square.setHidden();
+        }
     }
 
     /**
@@ -130,7 +146,11 @@ public class GameView extends View {
      */
     @Override
     public void setFlagged(final Point location) {
-        throw new UnsupportedOperationException("Not implemented!");
+        Square square = getSquareFromPosition(location);
+
+        if (square != null) {
+            square.setFlagged();
+        }
     }
 
     /**
@@ -138,7 +158,11 @@ public class GameView extends View {
      */
     @Override
     public void setValue(final Point location, final int value) {
-        throw new UnsupportedOperationException("Not implemented!");
+        Square square = getSquareFromPosition(location);
+
+        if (square != null) {
+            square.setValue(value);
+        }
     }
 
     /**
@@ -146,7 +170,11 @@ public class GameView extends View {
      */
     @Override
     public void setMine(final Point location) {
-        throw new UnsupportedOperationException("Not implemented!");
+        Square square = getSquareFromPosition(location);
+
+        if (square != null) {
+            square.setMine();
+        }
     }
 
     /**
