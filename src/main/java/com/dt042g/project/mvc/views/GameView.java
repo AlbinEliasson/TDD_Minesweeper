@@ -2,9 +2,15 @@ package com.dt042g.project.mvc.views;
 
 import com.dt042g.project.mvc.views.gui.Square;
 
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.Point;
 import java.awt.event.MouseAdapter;
@@ -18,10 +24,16 @@ import java.awt.event.MouseEvent;
 public class GameView extends View {
     private final int _GAME_WIDTH = 600;
     private final int _GAME_HEIGHT = 600;
+    private final double _MENU_HEIGHT_PERCENTAGE = 0.1;
     private final int _boardSize;
     private boolean _boardLocked = false;
     private JFrame _frame;
     private JPanel _board;
+    private JLabel _menuText;
+    private JPanel _menu;
+    private JButton _restartButton;
+    private JButton _quitButton;
+    private JPanel _gamePanel;
 
     /**
      * Constructor to initialize and show the GUI with the provided board size.
@@ -37,6 +49,11 @@ public class GameView extends View {
      */
     private void createAndShowGUI() {
         initializeBoard();
+        initializeMenuText();
+        initializeRestartButton();
+        initializeQuitButton();
+        initializeMenu();
+        initializeGamePanel();
         initializeFrame();
     }
 
@@ -45,7 +62,7 @@ public class GameView extends View {
      */
     private void initializeFrame() {
         _frame = new JFrame();
-        _frame.add(_board);
+        _frame.add(_gamePanel);
         _frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         _frame.setResizable(false);
         _frame.setTitle("Minesweeper");
@@ -81,6 +98,96 @@ public class GameView extends View {
             });
             _board.add(square);
         }
+    }
+
+    /**
+     * Method for initializing the menu text of the game.
+     */
+    private void initializeMenuText() {
+        _menuText = new JLabel();
+        _menuText.setFont(new Font("Monaco", Font.BOLD, (int) (_GAME_HEIGHT * 0.03)));
+        _menuText.setForeground(Color.BLACK);
+        _menuText.setText("Minesweeper");
+        _menuText.setHorizontalAlignment(JLabel.CENTER);
+    }
+
+    /**
+     * Method for initializing the menu of the game containing the menu text, restart and quit buttons.
+     */
+    private void initializeMenu() {
+        _menu = new JPanel();
+        _menu.setBackground(new Color(164, 164, 164));
+        _menu.setPreferredSize(new Dimension(_GAME_WIDTH, (int) ((double) _GAME_HEIGHT * _MENU_HEIGHT_PERCENTAGE)));
+        _menu.setLayout(new GridLayout(1, 3, 60, 0));
+        _menu.setBorder(BorderFactory.createBevelBorder(1, Color.GRAY, Color.WHITE));
+
+        _menu.add(_restartButton);
+        _menu.add(_menuText);
+        _menu.add(_quitButton);
+    }
+
+    /**
+     * Method for initializing the menu restart button.
+     */
+    private void initializeRestartButton() {
+        _restartButton = new JButton();
+        _restartButton.setText("Restart");
+
+        addRestartButtonListener(_restartButton);
+        initializeQuitResetButtons(_restartButton);
+    }
+
+    /**
+     * Method for adding the restart button-listener to push a reset game event.
+     * @param restartButton the restart button
+     */
+    private void addRestartButtonListener(final JButton restartButton) {
+        restartButton.addActionListener(e -> pushResetGameEvent());
+    }
+
+    /**
+     * Method for initializing the menu quit button.
+     */
+    private void initializeQuitButton() {
+        _quitButton = new JButton();
+        _quitButton.setText("Quit");
+
+        addQuitButtonListener(_quitButton);
+        initializeQuitResetButtons(_quitButton);
+    }
+
+    /**
+     * Method for adding the quit button-listener to exit the game.
+     * @param quitButton the quit button
+     */
+    private void addQuitButtonListener(final JButton quitButton) {
+        quitButton.addActionListener(e -> System.exit(0));
+    }
+
+    /**
+     * Common method for initializing the restart and quit button.
+     * @param button quit or restart button
+     */
+    private void initializeQuitResetButtons(final JButton button) {
+        button.setPreferredSize(new Dimension(100, 50));
+        button.setEnabled(true);
+        button.setFont(new Font("Monaco", Font.BOLD, (int) (_GAME_WIDTH * 0.03)));
+        button.setVisible(false);
+        button.setBackground(Color.LIGHT_GRAY);
+        button.setBorder(BorderFactory.createBevelBorder(0));
+    }
+
+    /**
+     * Method for initializing the game panel which holds both the board and the menu of the game.
+     */
+    private void initializeGamePanel() {
+        _gamePanel = new JPanel();
+        _gamePanel.setLayout(new BorderLayout());
+        _gamePanel.setPreferredSize(new Dimension(
+                _GAME_WIDTH, (int) ((double) _GAME_HEIGHT * (1 + _MENU_HEIGHT_PERCENTAGE))));
+
+        _gamePanel.add(_menu, BorderLayout.NORTH);
+        _gamePanel.add(_board, BorderLayout.CENTER);
     }
 
     /**

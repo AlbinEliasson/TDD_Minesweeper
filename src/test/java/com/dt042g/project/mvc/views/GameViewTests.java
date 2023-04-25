@@ -7,6 +7,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import java.awt.Point;
@@ -18,6 +19,8 @@ import java.util.List;
 
 /**
  * Class containing unit-tests for the GameView class.
+ *
+ * @author Martin K. Herkules (makr1906) & Albin Eliasson (alel2104)
  */
 public class GameViewTests {
     private static GameView gameView;
@@ -26,10 +29,15 @@ public class GameViewTests {
     private static Field boardField;
     private static Field boardLockedField;
     private static Field squareContentField;
+    private static Field menuTextfield;
+    private static Field resetButtonField;
+    private static Field quitButtonField;
     private static Method calculateSquarePosition;
     private static Method selectSquare;
     private static Method flagSquare;
     private static Method getSquareFromPosition;
+    private static Method addRestartButtonListener;
+
 
     /**
      * Method for accessing private fields/methods and initialize a list of point locations
@@ -44,6 +52,12 @@ public class GameViewTests {
         boardLockedField.setAccessible(true);
         squareContentField = Square.class.getDeclaredField("_squareContent");
         squareContentField.setAccessible(true);
+        menuTextfield = GameView.class.getDeclaredField("_menuText");
+        menuTextfield.setAccessible(true);
+        resetButtonField = GameView.class.getDeclaredField("_restartButton");
+        resetButtonField.setAccessible(true);
+        quitButtonField = GameView.class.getDeclaredField("_quitButton");
+        quitButtonField.setAccessible(true);
 
         // Private methods
         calculateSquarePosition = GameView.class.getDeclaredMethod(
@@ -55,6 +69,8 @@ public class GameViewTests {
         flagSquare.setAccessible(true);
         getSquareFromPosition = GameView.class.getDeclaredMethod("getSquareFromPosition", Point.class);
         getSquareFromPosition.setAccessible(true);
+        addRestartButtonListener = GameView.class.getDeclaredMethod("addRestartButtonListener", JButton.class);
+        addRestartButtonListener.setAccessible(true);
 
         boardPositions = new ArrayList<>();
         for (int i = 0; i < boardSize; i++) {
@@ -502,5 +518,85 @@ public class GameViewTests {
             Assertions.assertNull(squareLabel.getIcon());
             Assertions.assertEquals(expectedText, squareLabel.getText());
         }
+    }
+
+    /**
+     * Method for testing the initializeMenuText method; by making sure the initial text is
+     * set to "Minesweeper".
+     */
+    @Test
+    public void test_initializeMenuText_InitialText() throws IllegalAccessException {
+        JLabel menuTextLabel;
+        String expectedMenuText = "Minesweeper";
+
+        menuTextLabel = (JLabel) menuTextfield.get(gameView);
+
+        String labelTextResult = menuTextLabel.getText();
+
+        Assertions.assertEquals(expectedMenuText, labelTextResult);
+    }
+
+    /**
+     * Method for testing the initializeRestartButton method; by making sure the text of the
+     * button is set to "Restart".
+     */
+    @Test
+    public void test_initializeRestartButton_ButtonText() throws IllegalAccessException {
+        String expectedButtonText = "Restart";
+        JButton restartButton = (JButton) resetButtonField.get(gameView);
+
+        String buttonTextResult = restartButton.getText();
+
+        Assertions.assertEquals(expectedButtonText, buttonTextResult);
+    }
+
+    /**
+     * Method for testing the initializeRestartButton method; testing that the button is initially
+     * hidden.
+     */
+    @Test
+    public void test_initializeRestartButton_Showing() throws IllegalAccessException {
+        JButton restartButton = (JButton) resetButtonField.get(gameView);
+
+        Assertions.assertFalse(restartButton.isShowing());
+    }
+
+    /**
+     * Method for testing the addRestartButtonListener method; by testing that the method adds a listener
+     * to call the View pushResetGameEvent() method.
+     */
+    @Test
+    public void test_addRestartButtonListener_CallViewPushResetGameEvent() throws IllegalAccessException, InvocationTargetException {
+        JButton restartButton = new JButton();
+
+        addRestartButtonListener.invoke(gameView, restartButton);
+        restartButton.doClick();
+
+        Mockito.verify(gameView, Mockito.times(1)).pushResetGameEvent();
+    }
+
+    /**
+     * Method for testing the initializeQuitButton method; by making sure the text of the
+     * button is set to "Quit".
+     */
+    @Test
+    public void test_initializeQuitButton_ButtonText() throws IllegalAccessException {
+        String expectedButtonText = "Quit";
+        JButton restartButton = (JButton) quitButtonField.get(gameView);
+
+        String buttonTextResult = restartButton.getText();
+
+        Assertions.assertEquals(expectedButtonText, buttonTextResult);
+    }
+
+    /**
+     * Method for testing the initializeQuitButton method; testing that the button is initially
+     * hidden.
+     */
+    @Test
+    public void test_initializeQuitButton_Showing() throws IllegalAccessException {
+        JButton restartButton = (JButton) resetButtonField.get(gameView);
+
+        Assertions.assertFalse(restartButton.isShowing());
     }
 }
