@@ -254,10 +254,10 @@ public class GameView extends View {
 
     /**
      * Setter for the board lock which locks the board from clicking on the squares.
-     * @param _boardLocked true if board is to be locked
+     * @param boardLocked true if board is to be locked
      */
-    public void setBoardLocked(boolean _boardLocked) {
-        this._boardLocked = _boardLocked;
+    public void setBoardLocked(boolean boardLocked) {
+        _boardLocked = boardLocked;
     }
 
     /**
