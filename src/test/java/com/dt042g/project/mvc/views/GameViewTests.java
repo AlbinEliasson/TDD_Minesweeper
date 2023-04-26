@@ -525,7 +525,7 @@ public class GameViewTests {
      * set to "Minesweeper".
      */
     @Test
-    public void test_initializeMenuText_InitialText() throws IllegalAccessException {
+    public void test_InitializeMenuText_InitialText() throws IllegalAccessException {
         JLabel menuTextLabel;
         String expectedMenuText = "Minesweeper";
 
@@ -541,7 +541,7 @@ public class GameViewTests {
      * button is set to "Restart".
      */
     @Test
-    public void test_initializeRestartButton_ButtonText() throws IllegalAccessException {
+    public void test_InitializeRestartButton_ButtonText() throws IllegalAccessException {
         String expectedButtonText = "Restart";
         JButton restartButton = (JButton) resetButtonField.get(gameView);
 
@@ -555,7 +555,7 @@ public class GameViewTests {
      * hidden.
      */
     @Test
-    public void test_initializeRestartButton_Showing() throws IllegalAccessException {
+    public void test_InitializeRestartButton_Showing() throws IllegalAccessException {
         JButton restartButton = (JButton) resetButtonField.get(gameView);
 
         Assertions.assertFalse(restartButton.isShowing());
@@ -566,7 +566,7 @@ public class GameViewTests {
      * to call the View pushResetGameEvent() method.
      */
     @Test
-    public void test_addRestartButtonListener_CallViewPushResetGameEvent() throws IllegalAccessException, InvocationTargetException {
+    public void test_AddRestartButtonListener_CallViewPushResetGameEvent() throws IllegalAccessException, InvocationTargetException {
         JButton restartButton = new JButton();
 
         addRestartButtonListener.invoke(gameView, restartButton);
@@ -580,7 +580,7 @@ public class GameViewTests {
      * button is set to "Quit".
      */
     @Test
-    public void test_initializeQuitButton_ButtonText() throws IllegalAccessException {
+    public void test_InitializeQuitButton_ButtonText() throws IllegalAccessException {
         String expectedButtonText = "Quit";
         JButton restartButton = (JButton) quitButtonField.get(gameView);
 
@@ -594,9 +594,187 @@ public class GameViewTests {
      * hidden.
      */
     @Test
-    public void test_initializeQuitButton_Showing() throws IllegalAccessException {
+    public void test_InitializeQuitButton_Showing() throws IllegalAccessException {
         JButton restartButton = (JButton) resetButtonField.get(gameView);
 
         Assertions.assertFalse(restartButton.isShowing());
+    }
+
+    /**
+     * Method for testing the gameOver method; testing that the setMine() method gets called with
+     * the provided point location.
+     */
+    @Test
+    public void test_GameOver_SquareSetMine() {
+        for (int i = 0; i < boardSize * boardSize; i++) {
+            Point position = boardPositions.get(i);
+
+            gameView.gameOver(position);
+
+            Mockito.verify(gameView, Mockito.times(1)).setMine(position);
+        }
+    }
+
+    /**
+     * Method for testing the gameOver method; testing that the menu text gets changed to "Game over!".
+     */
+    @Test
+    public void test_GameOver_ChangeMenuText() throws IllegalAccessException {
+        Point position = boardPositions.get(2);
+        JLabel menuTextLabel = (JLabel) menuTextfield.get(gameView);
+        String expectedMenuText = "Game over!";
+
+        gameView.gameOver(position);
+
+        String resultingText = menuTextLabel.getText();
+
+        Assertions.assertEquals(expectedMenuText, resultingText);
+    }
+
+    /**
+     * Method for testing the gameOver method; testing that the restart and quit menu buttons is
+     * set to showing.
+     */
+    @Test
+    public void test_GameOver_ShowsMenuButtons() throws IllegalAccessException {
+        Point position = boardPositions.get(0);
+        JButton restartButton = (JButton) resetButtonField.get(gameView);
+        JButton quitButton = (JButton) quitButtonField.get(gameView);
+
+        gameView.gameOver(position);
+
+        Assertions.assertTrue(restartButton.isShowing());
+        Assertions.assertTrue(quitButton.isShowing());
+    }
+
+    /**
+     * Method for testing the gameOver method; testing that the board lock gets set.
+     */
+    @Test
+    public void test_GameOver_LockBoard() throws IllegalAccessException {
+        Point position = boardPositions.get(0);
+
+        gameView.gameOver(position);
+
+        boolean boardLock = boardLockedField.getBoolean(gameView);
+
+        Assertions.assertTrue(boardLock);
+    }
+
+    /**
+     * Method for testing the win method; testing that the menu text gets changed to "You win!".
+     */
+    @Test
+    public void test_Win_ChangeMenuText() throws IllegalAccessException {
+        JLabel menuTextLabel = (JLabel) menuTextfield.get(gameView);
+        String expectedMenuText = "You win!";
+
+        gameView.win();
+
+        String resultingText = menuTextLabel.getText();
+
+        Assertions.assertEquals(expectedMenuText, resultingText);
+    }
+
+    /**
+     * Method for testing the win method; testing that the restart and quit menu buttons
+     * is set to showing.
+     */
+    @Test
+    public void test_Win_ShowsMenuButtons() throws IllegalAccessException {
+        JButton restartButton = (JButton) resetButtonField.get(gameView);
+        JButton quitButton = (JButton) quitButtonField.get(gameView);
+
+        gameView.win();
+
+        Assertions.assertTrue(restartButton.isShowing());
+        Assertions.assertTrue(quitButton.isShowing());
+    }
+
+    /**
+     * Method for testing the win method; testing that the board lock gets set.
+     */
+    @Test
+    public void test_Win_LockBoard() throws IllegalAccessException {
+        gameView.win();
+
+        boolean boardLock = boardLockedField.getBoolean(gameView);
+
+        Assertions.assertTrue(boardLock);
+    }
+
+    /**
+     * Method for testing the reset method; testing that the squares in the board gets
+     * set to hidden.
+     */
+    @Test
+    public void test_Reset_HidesBoardSquares() throws IllegalAccessException {
+        JPanel board = (JPanel) boardField.get(gameView);
+        Square.State expectedSquareState = Square.State.HIDDEN;
+        String expectedText = "";
+
+        for (int i = 0; i < boardSize * boardSize; i++) {
+            Square square = (Square) board.getComponent(i);
+
+            square.setFlagged();
+        }
+
+        gameView.reset();
+
+        for (int i = 0; i < boardSize * boardSize; i++) {
+            Square square = (Square) board.getComponent(i);
+            JLabel squareContent = (JLabel) squareContentField.get(square);
+
+            Assertions.assertEquals(expectedSquareState, square.getState());
+            Assertions.assertEquals(expectedText, squareContent.getText());
+            Assertions.assertNull(squareContent.getIcon());
+        }
+    }
+
+    /**
+     * Method for testing the reset method; testing that the menu text gets changed back to the
+     * initial "Minesweeper".
+     */
+    @Test
+    public void test_Reset_ChangeMenuText() throws IllegalAccessException {
+        JLabel menuTextLabel = (JLabel) menuTextfield.get(gameView);
+        String expectedMenuText = "Minesweeper";
+
+        menuTextLabel.setText("Not Minesweeper!");
+        gameView.reset();
+
+        String resultingText = menuTextLabel.getText();
+
+        Assertions.assertEquals(expectedMenuText, resultingText);
+    }
+
+    /**
+     * Method for testing the reset method; testing that the restart and quit menu buttons is
+     * set to hidden.
+     */
+    @Test
+    public void test_Reset_HidesMenuButtons() throws IllegalAccessException {
+        JButton restartButton = (JButton) resetButtonField.get(gameView);
+        JButton quitButton = (JButton) quitButtonField.get(gameView);
+
+        restartButton.setVisible(true);
+        quitButton.setVisible(true);
+
+        gameView.reset();
+
+        Assertions.assertFalse(restartButton.isShowing());
+        Assertions.assertFalse(quitButton.isShowing());
+    }
+
+    /**
+     * Method for testing the reset method; testing that the board lock is unset.
+     */
+    @Test
+    public void test_Reset_UnlockBoardLock() throws IllegalAccessException {
+        gameView.reset();
+
+        boolean boardLock = boardLockedField.getBoolean(gameView);
+
+        Assertions.assertFalse(boardLock);
     }
 }
