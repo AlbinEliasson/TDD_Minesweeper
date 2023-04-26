@@ -207,7 +207,7 @@ public class GameView extends View {
      * @param location the point location of the square in the board
      */
     private void selectSquare(final Square square, final Point location) {
-        if (square != null && !_boardLocked && square.getState() == Square.State.HIDDEN) {
+        if (square != null && !isBoardLocked() && square.getState() == Square.State.HIDDEN) {
             pushSelectEvent(location);
         }
     }
@@ -219,7 +219,7 @@ public class GameView extends View {
      * @param location the point location of the square in the board
      */
     private void flagSquare(final Square square, final Point location) {
-        if (square != null && !_boardLocked && square.getState() != Square.State.VALUE) {
+        if (square != null && !isBoardLocked() && square.getState() != Square.State.VALUE) {
             pushFlagEvent(location);
         }
     }
@@ -258,6 +258,14 @@ public class GameView extends View {
      */
     public void setBoardLocked(boolean _boardLocked) {
         this._boardLocked = _boardLocked;
+    }
+
+    /**
+     * Getter to check if the board is locked from clicking the squares.
+     * @return true if board is locked
+     */
+    public boolean isBoardLocked() {
+        return _boardLocked;
     }
 
     /**
