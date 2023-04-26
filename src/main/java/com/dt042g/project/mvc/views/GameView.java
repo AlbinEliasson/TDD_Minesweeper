@@ -237,6 +237,38 @@ public class GameView extends View {
     }
 
     /**
+     * Method for hiding the restart and quit menu buttons.
+     */
+    private void hideMenuButtons() {
+        _quitButton.setVisible(false);
+        _restartButton.setVisible(false);
+    }
+
+    /**
+     * Method for showing the restart and quit menu buttons.
+     */
+    private void showMenuButtons() {
+        _quitButton.setVisible(true);
+        _restartButton.setVisible(true);
+    }
+
+    /**
+     * Setter for the board lock which locks the board from clicking on the squares.
+     * @param _boardLocked true if board is to be locked
+     */
+    public void setBoardLocked(boolean _boardLocked) {
+        this._boardLocked = _boardLocked;
+    }
+
+    /**
+     * Method for setting the menu text.
+     * @param menuText the text to be set
+     */
+    public void setMenuText(String menuText) {
+        _menuText.setText(menuText);
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -289,7 +321,10 @@ public class GameView extends View {
      */
     @Override
     public void gameOver(final Point location) {
-        throw new UnsupportedOperationException("Not implemented!");
+        setMine(location);
+        setMenuText("Game over!");
+        showMenuButtons();
+        setBoardLocked(true);
     }
 
     /**
@@ -297,7 +332,9 @@ public class GameView extends View {
      */
     @Override
     public void win() {
-        throw new UnsupportedOperationException("Not implemented!");
+        setMenuText("You win!");
+        showMenuButtons();
+        setBoardLocked(true);
     }
 
     /**
@@ -305,6 +342,13 @@ public class GameView extends View {
      */
     @Override
     public void reset() {
-        throw new UnsupportedOperationException("Not implemented!");
+        for (int i = 0; i < (_boardSize * _boardSize); i++) {
+            Square square = (Square) _board.getComponent(i);
+            square.setHidden();
+        }
+
+        setMenuText("Minesweeper");
+        hideMenuButtons();
+        setBoardLocked(false);
     }
 }
