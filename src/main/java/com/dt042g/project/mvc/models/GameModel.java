@@ -5,11 +5,23 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+/**
+ * The game model component containing a concrete implementation of a Model.
+ *
+ * @author Martin K. Herkules (makr1906) & Albin Eliasson (alel2104)
+ */
 public class GameModel extends Model {
     private final double MINE_CHANCE = 0.15;
     private final int _boardSize;
     private List<List<BackingSquare>> _board;
 
+    /**
+     * Constructor to initialize the model. Note that this
+     * does not generate the board; this is only done after
+     * the first call to *selectSquare*.
+     *
+     * @param boardSize The size of the board.
+     */
     public GameModel(int boardSize) {
         _boardSize = boardSize;
         _board = null;
