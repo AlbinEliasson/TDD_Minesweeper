@@ -30,6 +30,8 @@ public class GameModelDynamicTests {
 
     private static Field fieldBoard;
     private static Field fieldMineChance;
+    private static Field fieldRevealedCount;
+    private static Field fieldMineCount;
     private static Method methodGenerateSquares;
 
     /**
@@ -38,7 +40,7 @@ public class GameModelDynamicTests {
      * @return Argument with a model and board size.
      */
     private static Stream<Arguments> Model() {
-        return Arrays.stream(sizes).map(size -> Arguments.of(new GameModel(size), size));
+        return Arrays.stream(sizes).map(size -> Arguments.of(Mockito.spy(new GameModel(size)), size));
     }
 
     /**
@@ -106,6 +108,10 @@ public class GameModelDynamicTests {
         fieldBoard.setAccessible(true);
         fieldMineChance = GameModel.class.getDeclaredField("MINE_CHANCE");
         fieldMineChance.setAccessible(true);
+        fieldRevealedCount = GameModel.class.getDeclaredField("_revealedCount");
+        fieldRevealedCount.setAccessible(true);
+        fieldMineCount = GameModel.class.getDeclaredField("_mineCount");
+        fieldMineCount.setAccessible(true);
         methodGenerateSquares = GameModel.class.getDeclaredMethod("generateSquares", Point.class);
         methodGenerateSquares.setAccessible(true);
     }
@@ -756,6 +762,64 @@ public class GameModelDynamicTests {
         int differenceX = Math.abs(locationA.x - locationB.x);
         int differenceY = Math.abs(locationA.y - locationB.y);
         return differenceX <= 1 && differenceY <= 1 && (differenceX + differenceY) != 0;
+    }
+
+    /**
+     * Method for checking the selectSquare method to ensure that a "win" event
+     * is correctly triggered when the win condition is achieved (all "value"
+     * squares are revealed).
+     *
+     * @param model The model to use.
+     * @param boardSize The expected size of the board.
+     */
+    @ParameterizedTest
+    @MethodSource("Model")
+    public void test_SelectSquare_WinCondition(GameModel model, int boardSize) throws InvocationTargetException, IllegalAccessException {
+        // Trigger board generation
+        methodGenerateSquares.invoke(model, new Point(0, 0));
+
+        // List for storing all hidden "value" square locations
+        List<Point> hidden = new ArrayList<>();
+
+        // Get all hidden "value" square locations
+        for(int x = 0; x < boardSize; x++)
+            for(int y = 0; y < boardSize; y++)
+                if(!model.isMine(new Point(x, y)))
+                    hidden.add(new Point(x, y));
+
+        // Counter for keeping track how many times "selectSquare" has been
+        // called
+        int counter = 0;
+
+        // Iterate until there are no more hidden "value" squares
+        while(!hidden.isEmpty()) {
+            // Verify that a win event has not been pushed; since at this point
+            // there must be at least one hidden "value" square remaining.
+            Mockito.verify(model, Mockito.times(0)).pushWinEvent();
+
+            // Reveal square at current location
+            model.selectSquare(hidden.remove(0));
+
+            // Define a captor for retrieving which squares are to be revealed
+            // due to the above "selectSquare" call.
+            ArgumentCaptor<List<Point>> revealed = ArgumentCaptor.forClass(List.class);
+
+            // Verify that a reveal square event was fired; and more importantly
+            // capture the locations of the squares that have been revealed.
+            Mockito.verify(model, Mockito.times(++counter)).pushRevealSquareEvent(revealed.capture());
+
+            // Remove all newly revealed square from the list of hidden "value"
+            // square locations.
+            hidden.removeAll(revealed.getValue());
+        }
+
+        // At this point there should be no remaining hidden "value" squares;
+        // only hidden mines and revealed "value" squares should be on the
+        // board.
+
+        // Verify that a win event was triggered; since there should at this
+        // point be no remaining hidden "value" squares.
+        Mockito.verify(model, Mockito.times(1)).pushWinEvent();
     }
 
     /**

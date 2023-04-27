@@ -13,7 +13,10 @@ import java.util.Random;
 public class GameModel extends Model {
     private final double MINE_CHANCE = 0.15;
     private final int _boardSize;
+
     private List<List<BackingSquare>> _board;
+    private int _mineCount;
+    private int _revealedCount;
 
     /**
      * Constructor to initialize the model. Note that this
@@ -25,6 +28,8 @@ public class GameModel extends Model {
     public GameModel(int boardSize) {
         _boardSize = boardSize;
         _board = null;
+        _mineCount = 0;
+        _revealedCount = 0;
     }
 
     /**
@@ -32,6 +37,9 @@ public class GameModel extends Model {
      */
     private void generateSquares(Point firstLocation)  {
         _board = new ArrayList<>();
+        _mineCount = 0;
+        _revealedCount = 0;
+
         Random random = new Random();
 
         // Add "rows" to board
@@ -50,6 +58,9 @@ public class GameModel extends Model {
 
                 // Set whether it is a mine
                 row.get(i).setMine(isMine);
+
+                // Increment the mine count if appropriate
+                _mineCount += isMine ? 1 : 0;
             }
         }
 
@@ -60,6 +71,7 @@ public class GameModel extends Model {
         // The first square clicked is a mine, make it not a mine.
         if(isMine(firstLocation)) {
             _board.get(firstLocation.x).get(firstLocation.y).setMine(false);
+            _mineCount--;
         }
 
         // Check each neighbour of the first clicked square.
@@ -67,6 +79,7 @@ public class GameModel extends Model {
             // If the neighbor is a mine, make it not a mine.
             if(isMine(neighbor)) {
                 _board.get(neighbor.x).get(neighbor.y).setMine(false);
+                _mineCount--;
             }
         }
     }
@@ -190,7 +203,11 @@ public class GameModel extends Model {
         }
 
         List<Point> locations = findAndRevealZeroValueNeighbors(location);
+        _revealedCount += locations.size();
         pushRevealSquareEvent(locations);
+
+        if(_revealedCount + _mineCount == _boardSize * _boardSize)
+            pushWinEvent();
     }
 
     /**
