@@ -14,7 +14,6 @@ import org.mockito.Mockito;
 import java.awt.Point;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.IntStream;
@@ -182,8 +181,7 @@ public class GameControllerTests {
      */
     @Test
     public void test_HandleRevealSquareEvent_CallModelGetSquareValue() {
-        List<Point> locations = new ArrayList<>(Arrays.asList(
-                new Point(0, 0), new Point(1, 0), new Point(2, 0)));
+        List<Point> locations = Arrays.asList(new Point(0, 0), new Point(1, 0), new Point(2, 0));
 
         gameController.handleRevealSquareEvent(locations);
 
@@ -198,8 +196,7 @@ public class GameControllerTests {
      */
     @Test
     public void test_HandleRevealSquareEvent_CallViewSetValue() {
-        List<Point> locations = new ArrayList<>(Arrays.asList(
-                new Point(0, 0), new Point(1, 0), new Point(2, 0)));
+        List<Point> locations = Arrays.asList(new Point(0, 0), new Point(1, 0), new Point(2, 0));
 
         gameController.handleRevealSquareEvent(locations);
 
