@@ -40,8 +40,12 @@ public class GameModelKnownBoardTests {
             { "H2", "H2", "F2", "H2", "H2" },   // (Hidden Two      ), (Hidden Two      ), (Flagged Two     ), (Hidden Two      ), (Hidden Two      )
             { "H0", "H0", "H1", "HM", "FM" }    // (Hidden Zero     ), (Hidden Zero     ), (Hidden One      ), (Hidden Mine     ), (Flagged Mine    )
     };
+    private static final int boardInitialMineCount = 6;
+    private static final int boardInitialRevealedCount = 4;
 
     private static Field fieldBoard;
+    private static Field fieldRevealedCount;
+    private static Field fieldMineCount;
 
     /**
      * Argument generator method for running tests with all possible locations.
@@ -63,6 +67,10 @@ public class GameModelKnownBoardTests {
     public static void setupAll() throws NoSuchFieldException {
         fieldBoard = GameModel.class.getDeclaredField("_board");
         fieldBoard.setAccessible(true);
+        fieldRevealedCount = GameModel.class.getDeclaredField("_revealedCount");
+        fieldRevealedCount.setAccessible(true);
+        fieldMineCount = GameModel.class.getDeclaredField("_mineCount");
+        fieldMineCount.setAccessible(true);
     }
 
     /**
@@ -83,6 +91,9 @@ public class GameModelKnownBoardTests {
                         }).toList()).toList();
 
         fieldBoard.set(model, board);
+
+        fieldRevealedCount.setInt(model, boardInitialRevealedCount);
+        fieldMineCount.setInt(model, boardInitialMineCount);
     }
 
     /**
@@ -156,7 +167,7 @@ public class GameModelKnownBoardTests {
 
         if(
                 boardTemplate[location.x][location.y].charAt(0) == 'R' ||
-                        boardTemplate[location.x][location.y].charAt(0) == 'F'
+                boardTemplate[location.x][location.y].charAt(0) == 'F'
         ) {
             Mockito.verify(model, Mockito.times(0).description("Invalid number of MineHit events when calling on revealed/flagged square; expected 0!")).pushMineHitEvent(Mockito.any());
             Mockito.verify(model, Mockito.times(0).description("Invalid number of RevealSquare events when calling on revealed/flagged square; expected 0!")).pushRevealSquareEvent(Mockito.anyList());
@@ -219,5 +230,29 @@ public class GameModelKnownBoardTests {
 
         Assertions.assertTrue(reveals.getValue().containsAll(expected));
         Assertions.assertEquals(expected.size(), reveals.getValue().size());
+    }
+
+    /**
+     * Method for checking the selectSquare method to ensure that the win
+     * condition is correctly detected; and pushes a "win" event.
+     */
+    @Test
+    public void test_SelectSquare_ValidateWinCondition() {
+        // Reveal all squares except four in top left corner. Look at
+        // boardTemplate for exact values.
+        model.selectSquare(new Point(2, 4));
+        model.setSquareFlag(new Point(3, 2), false);
+        model.selectSquare(new Point(4, 0));
+
+        // Verify that win event has not been pushed; since win condition has
+        // not been met.
+        Mockito.verify(model, Mockito.times(0)).pushWinEvent();
+
+        // Reveal final squares
+        model.selectSquare(new Point(0, 0));
+
+        // Verify that win condition was detected, and that win event was
+        // pushed.
+        Mockito.verify(model, Mockito.times(1)).pushWinEvent();
     }
 }
