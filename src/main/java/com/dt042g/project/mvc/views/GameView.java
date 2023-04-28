@@ -277,6 +277,17 @@ public class GameView extends View {
     }
 
     /**
+     * Method for programmatically exiting the GUI.
+     */
+    public void destroy() {
+        // A non-disposed frame keeps the object from being garbage collected,
+        // even if the parent object (this) has no remaining references.
+        // Therefore, it must be destroyed manually.
+        _frame.dispose();
+        _frame = null;
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override

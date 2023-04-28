@@ -1,6 +1,7 @@
 package com.dt042g.project.mvc.views;
 
 import com.dt042g.project.mvc.views.gui.Square;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -86,6 +87,18 @@ public class GameViewTests {
     @BeforeEach
     public void setupEach() {
         gameView = Mockito.spy(new GameView(boardSize));
+    }
+
+    /**
+     * Method which is triggered after each individual test method is executed.
+     */
+    @AfterEach
+    public void destroyEach() {
+        // Close the GUI
+        gameView.destroy();
+
+        // Delete the reference to the object
+        gameView = null;
     }
 
     /**

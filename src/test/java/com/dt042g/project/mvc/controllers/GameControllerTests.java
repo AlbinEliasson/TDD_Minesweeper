@@ -2,6 +2,7 @@ package com.dt042g.project.mvc.controllers;
 
 import com.dt042g.project.mvc.models.GameModel;
 import com.dt042g.project.mvc.views.GameView;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -60,6 +61,18 @@ public class GameControllerTests {
         gameModel = Mockito.spy(new GameModel(boardSize));
         gameView = Mockito.spy(new GameView(boardSize));
         gameController = new GameController(gameModel, gameView);
+    }
+
+    /**
+     * Method which is triggered after each individual test method is executed.
+     */
+    @AfterEach
+    public void destroyEach() {
+        // Close the GUI
+        gameView.destroy();
+
+        // Delete the reference to the object
+        gameView = null;
     }
 
     /**
