@@ -2,22 +2,14 @@
 
 ## Table of contents
 
-1. [Group 9](#section-1)
-2. [Environment & Tools](#section-2)
-3. [Project description](#section-3)
-4. [Execution instructions](#section-4)
-5. [Purpose](#section-5)
-6. [Procedures](#section-6)
-7. [Discussion](#section-7)
+1. [Environment & Tools](#section-2)
+2. [Project description](#section-3)
+3. [Execution instructions](#section-4)
+4. [Purpose](#section-5)
+5. [Procedures](#section-6)
+6. [Discussion](#section-7)
 
-## 1. Group 9: <a name="section-1"></a>
-
-| Name       | Albin Eliasson           | Martin K. Herkules          |
-|------------|--------------------------|-----------------------------|
-| Student id | alel2104                 | makr1906                    |
-| E-mail     | alel2104@student.miun.se | makr1906@student.miun.se    |
-
-## 2. Environment & tools <a name="section-2"></a>
+## 1. Environment & tools <a name="section-2"></a>
 
 | Tool             | alel2104             | makr1906                    |
 |------------------|----------------------|-----------------------------|
@@ -29,12 +21,12 @@
 
 (*) But the project is configured to compile using JDK 17.
 
-## 3. Project description <a name="section-3"></a>
+## 2. Project description <a name="section-3"></a>
 The idea behind this project was to create a custom implementation of the classic game Minesweeper. The Minesweeper game is based on having a board of N x N squares. Each square can be either a mine or a "value" square. With the goal of the game being to click all "value" squares, without clicking any of the mines; the catch being that all squares are hidden at the start of the game.
 
 When the user clicks on the first square, it should reveal a couple of initial "value" squares. Provided the "values" of the revealed squares, the user must figure out where all the mines on the board are. This can be done since the actual value of "value" squares represent the number of neighboring mines. So the goal is to reveal all value squares, without clicking any mines; and optionally to right-click the mine squares to flag them to indicate that you know they are mines.
 
-## 4. Execution instructions <a name="section-4"></a>
+## 3. Execution instructions <a name="section-4"></a>
 To run the game the jar file must first be built. For this maven has been configured to do this automatically when the `mvn clean verify` command is run in the base directory of the project. This should produce an executable jar file in the `./target` directory which can then be executed. However, depending on the underlying environment there seems to be a lot of inconsistencies with how the file wants to be executed. However, with all tested environments execution from the terminal always works; resulting in the final instructions being:
 
 1. Download the GUI repository.
@@ -43,16 +35,16 @@ To run the game the jar file must first be built. For this maven has been config
 4. Execute the `.jar` file using the command `java -jar "path/to/filename.jar"`
 5. Play the game.
 
-## 5. Purpose <a name="section-5"></a>
+## 4. Purpose <a name="section-5"></a>
 The goal of this project is to create an application which is a capable implementation of the classic Microsoft game Minesweeper. The application should implement a Swing GUI as the medium for user interaction with the game. The GUI should allow for all of the standard Minesweeper actions; viewing the board, clicking squares to reveal them, and flagging squares by right-clicking them. The game should be lost if a mine is clicked, and if all non-mine squares are revealed the game is won; and the user can either exit the game or restart.
 
 The general structure of the project implementation should also follow the MVC architectural pattern. With the game functionality being separated into data handling (model), user interaction (view), a communications layer (controller); and the Observer pattern being used to trigger events between the elements.
 
 Lastly the project should also follow the principles of TDD with thorough unit-testing being implemented before each part of the functionality.
 
-## 6. Procedures <a name="section-6"></a>
+## 5. Procedures <a name="section-6"></a>
 
-### 6.1. Testing procedures
+### 5.1. Testing procedures
 To start with the full project as followed the principles of test driven development, or TDD. The basic premise of TDD is to split the implementation in to individual features, and the split each feature into parts that are as small as possible. Then before implementing each part, writing a unit-test for this test which ensures that the part of the feature functions correctly.
 
 The basic steps used for applying TDD in this project can be summarized as:
@@ -96,7 +88,7 @@ public void test_GameModel_Example() {
 }
 ```
 
-### 6.2. Observer
+### 5.2. Observer
 The first part of the application that was created was an implementation of the observer pattern. The observer pattern is a structure which allows certain objects to attach themselves to others, and subscribe to events which they may cause. For the Minesweeper game, this will be used in conjunction with the MVC pattern to pass information between the model, view and controller.
 
 The observer implementation is split into two parts, an abstract class `Observed` and an interface `Observer`. The `Observed` interface will be implemented by classes which will be generating events. The observed class provides three methods: `attachObserver`, `detachObserver` and `pushEvent`. The first two are used to attach and detach observer objects from the subject. To keep track of which observer object to push events to; each observed object keeps a list of references to observers. The `attachObserver` method allows a observer to be attached to receive events, and the `detachObserver` allows observers to be removed.
@@ -109,12 +101,12 @@ As mentioned in the testing procedures section, to test the default implementati
 
 For example for testing the `Observed.attachObserver` method, the `TestingConcreteObserved` and `TestingConcreteObserver` were used. The `attachObserver` method has a default implementation, which means it needs to be tested to ensure that it works as expected.
 
-### 6.3. MVC
+### 5.3. MVC
 The implementation is structured in accordance with the MVC architectural pattern, as defined in the project description. As the pattern dictates the project is split into three main component types: model, view and controllers. This is done in layers, at the top there are three abstract superclasses; one for each type: `Model`, `View` and `Controller`. These base classes are used as the superclasses of any concrete MVC implementations, which currently are: `GameModel`, `GameView`, and `GameController`.
 
 These components follow the basic communication structure defined by the MVC pattern; where the model is responsible for data handling, the view for interacting with the user and displaying information, and lastly the controller directs communications between them. To achieve this, the observer pattern is used in conjunction with the MVC pattern. The model and view implement the `Observed` interface and the controller implements the `Observer` interface. Then when information needs to be transferred, the model and view can generate events, which are handled by the controller.
 
-#### 6.3.1. Model superclass
+#### 5.3.1. Model superclass
 The `Model` class acts as the superclass for all concrete model implementations in the project. It defines all the public methods which are needed for communication between the model and controller. This includes all getters and setters for information which is needed to display information in the view. But also methods for pushing specific events which can be caused by circumstances determined by the model.
 
 To start with as mentioned the `Model` class implements the `Observed` interface which means that it is capable of producing events. There are a total of three event types which the model can cause:
@@ -127,7 +119,7 @@ The model also defines abstract methods for all interactions which the controlle
 
 Lastly, the `Model` class also provides helper methods for pushing each of the above event types. These helper methods are simple wrappers around the `Observed.pushEvent` class to make it easy to push specific event types, without having to provide a specific event id each time.
 
-#### 6.3.2. View superclass
+#### 5.3.2. View superclass
 The `View` class acts as the super class for all concrete view implementations. It defines abstract methods for each interaction the controller must be able to do with the view. This mainly includes setters for square information, such as setting the value of a square when it is revealed; and propagating win/loss conditions produced by the model.
 
 The view is capable of producing three types of events, each corresponding to a specific user interaction:
@@ -138,17 +130,17 @@ The view is capable of producing three types of events, each corresponding to a 
 
 Lastly, the `View` class also provides helper methods for pushing these specific event types, like the model. It provides one method for each of the above event types, which makes it nicer when actually calling these methods, as you don't have to provide an event id each call.
 
-#### 6.3.3. Controller superclass
+#### 5.3.3. Controller superclass
 The `Controller` class acts as the super class for all concrete controller classes. It implements the `Observer` interface and defines abstract methods for each of the event types which the model and view can produce. Along with these abstract methods and the implementation of the observer interface, it provides a default implementation for the `handleEvent` method. The implementation takes the general event provided by the `handleEvent` method and directs the incoming event to the appropriate event handler method. The advantage being that the concrete implementations do not have to deal with sorting through events; instead each event handler method will be triggered automatically when appropriate.
 
-### 6.4. Model implementation
+### 5.4. Model implementation
 
-#### 6.4.1. Square information storage
+#### 5.4.1. Square information storage
 As defined by the MVC pattern the model is responsible for tracking and storing all information related to the state of the game; in this case the state of each square on the board. For each square there are three pieces of information which needs to be stored: whether the square is revealed, whether the square is flagged, and whether the square is a mine. Each non-mine square also needs a "value", however, this value is just the number of neighboring mines, which means it is better calculated on the fly rather than stored.
 
 To store information about each square the class `BackingSquare` is used. This class is a simple data container with three booleans (and accompanying getters and setters): `revealed`, `flagged`, and `mine`. Each square on displayed on the board has a corresponding `BackingSquare` instance in the model. Inside the model, these squares are then stored in a two-dimensional list. The instances can then be accessed using the coordinates of the square, by indexing into the two-dimensional list.
 
-#### 6.4.2. Square generation
+#### 5.4.2. Square generation
 Along with being responsible for tracking and storing square information, the model is also responsible for performing data manipulation and, in this case, data generation. The Minesweeper game is based upon the user figuring out the locations of hidden mines on a board. This means that the locations of the mines has to be generated. There are many ways to achieve this, there are established algorithms for generating boards with specific difficulty. But in accordance with original version created by Microsoft, this implementation randomly generates the mines, with one exception which will be discussed later.
 
 The generation of squares is handled by an internal method in the `GameModel` class, `generateSquares`. This method is called whenever the game is started or restarted. The method is responsible for initializing the backing storage of `BackingSquare` objects and for setting their initial values. To do this the `GameModel` takes in a board size value in its construction. This value determines the number of squares on the board. The generation starts by initializing the two-dimensional list for storing the backing squares.
@@ -178,7 +170,7 @@ This results in a guaranteed set of squares which are not mines at the first loc
 
 However, this approach does require that the generation logic knows which square was first clicked; in other words, the board must be generated after the user has clicked the first square. This seems weird, but since the model is ultimately responsible for updating the board when the user clicks a square, it is not a problem. All the model has to do is add a check when its `selectSquare` method is triggered. Before it performs its logic, it checks if the board has been generated, and if not it calls the generation logic, with the provided location as the first location. This results in the generation logic having access to the first location.
 
-#### 6.4.3. Select square
+#### 5.4.3. Select square
 Then we have the `selectSquare` method. This method is what the controller calls when it receives a "select square" event from the view. The `selectSquare` method is responsible for figuring out what happens when a user clicks on a hidden square. The select square method takes a location as a parameter, which corresponds to the square which was clicked in the GUI.
 
 First it checks whether the board has been generated. If it doesn't exist, it means that the provided location is the "first location clicked". And if so it is provided to the generation method.
@@ -199,20 +191,20 @@ The `selectSquare` method then takes the returned locations and provides them in
 
 And since a set of squares has just been revealed, it must check if this has been achieved. To do this, the model keeps track of the number of mines and revealed squares on the board. The number of mines is countered in the `generateSquares` method and is stored as class properties along with the revealed count. The `selectSquare` method updates the reveal count every time it reveals a set of squares. Then all it has to do is check if the number of revealed squares plus the number of mines is equal to the total number of squares. If so, the game has been won, and a "win" event is pushed.
 
-#### 6.4.4. Reset
+#### 5.4.4. Reset
 The model also provides functionality for resetting the game, essentially restarting it by deleting the previous board. In the current implementation this functionality is used by the controller when the user presses the "Restart game" button in the GUI. The method is implemented very simply. Since the board is generated "as needed" when the first square is clicked, the `selectSquare` method checks if the board is null, and if so generates it. So all the reset method needs to do is set the "board storage" list to null, deleting the board state; and causing the board to automatically be regenerated when needed.
 
-#### 6.4.5. Getters/setters, reset
+#### 5.4.5. Getters/setters, reset
 The model also provides access methods for all relevant data which the controller must be able to access. The access methods themselves are defined in the `Model` superclass, but are abstract and the implementations are provided by the `GameController` implementation. The first three `isFlagged`, `isMine` and `isRevealed` are simple pass through getters for values stored in the `BackingSquare` two-dimensional array.
 
 Then the `setSquareFlag` is a setter for whether a square is flagged. This method is used by the controller when it receives a "flag square" event to update the model. This method is also just a pass through method for setting the "flagged" value of the corresponding `BackingSquare`.
 
 Then lastly there is the `getSquareValue` method which is used by the controller to get the "value" of a square. The controller needs this information when revealing a square. When a "value" square is revealed, its number should be shown to the user to indicate how many mines are neighboring it. This value is not stored by the model, and is instead calculated. It takes in a location, and counts the number of neighboring "mine squares", and returns the count.
 
-### 6.5. View implementation
+### 5.5. View implementation
 As defined by the MVC pattern the view is responsible for interacting with the user and displaying information; which in this project includes a Swing GUI with components to display the game board containing the squares of the game and a menu in which the user can view the current "game state" (playing state: "Minesweeper", game over state: "Game over!" and the win state: "You win!") as well as interactive buttons to restart the game and quit the game.
 
-#### 6.5.1. Square GUI component
+#### 5.5.1. Square GUI component
 As each square in the game board is to be clickable and display information depending on the current state of the square, the class `Square` is utilized. This class which extends the generic lightweight container `JPanel` utilizes an enum with the three states the square can posses: hidden, flagged or value. The hidden state, which is the initial state for every square marks that the square is not yet revealed or flagged.
 The flagged state marks the square to be flagged and the value state marks the square to be revealed. To visually display the states a `JLabel` is utilized to hold either a text or an image icon.
 
@@ -225,7 +217,7 @@ Other than setting the state and displaying the number value of the square, the 
 
 The `setMine()` method also sets the current state to value as the square is revealed. The method, like the `setFlagged()` method reads in an image from resources' which this time depicts a mine and sets it as an image icon in the `JLabel`. To aid the revealed square visually the background color/border is changed to red with a line border.
 
-#### 6.5.2. Board
+#### 5.5.2. Board
 To create and display the interactive board containing the squares in the `GameView` class which is the concrete implementation of the super class view, the `initializeBoard()` method initializes a `JPanel` with a preferred size, utilizing the set width and game height constants as well as a grid layout of the provided board size from `GameView` constructor as rows and columns.
 Utilizing the board size, a for-loop is created to create new `Square` instances and add them to the `JPanel`.
 
@@ -236,7 +228,7 @@ When the position of the square is calculated, the `selectSquare()` (for left-cl
 and that the board is not locked, which is set with a boolean variable. The method then utilized the view method `pushSelectEvent()` to push the select event with the location of the selected square. The latter of the two methods also makes sure the clicked square is not null, checks that the squares state is not value (it has not already been revealed) and the board is not locked.
 To then utilize the view `pushFlagEvent()` method to push a flag event with the location of the selected square to be flagged.
 
-#### 6.5.3. Menu
+#### 5.5.3. Menu
 To create the menu of the game with the text to view the current "game state" and interactive buttons to restart the game and quit the game. A `JLabel` is created in the `initializeMenuText()` method
 with a set text "Minesweeper" which is to represent that the game is in a playing state.
 
@@ -250,18 +242,18 @@ in the common `initializeQuitResetButtons()` method.
 To easier place the menu text and buttons in the GUI, a `JPanel` is initialized to hold the three components in the `initializeMenu()` method. The `JPanel` is initialized with a background color/border, a preferred size
 of the game width and 10% of the games height as the menu is only to hold a small portion of the GUI and a grid layout to place the three components next to each-other.
 
-#### 6.5.4. Game panel
+#### 5.5.4. Game panel
 To make the placement of the menu and board in the frame easier, a `JPanel` was initialized to hold the two components in the `initializeGamePanel()` method. The method initializes the
 `JPanel` with a border layout to place the menu at the top of the GUI and the board in the center. To make sure the menu and board is correctly scaled if the width and height of the game
 were ever to change, the `JPanel` sets a preferred size of the width of the game, and for the height the games height plus an extra 10% of the height. Only utilizing the games width
 and height as preferred size gave undesirable gaps between the menu and board if the width and height was set to a smaller size.
 
-#### 6.5.5. Frame
+#### 5.5.5. Frame
 The `JFrame` of the game which holds the game panel containing the board and menu is initialized in the `initializeFrame()` method. The methods simply adds the game panel, makes sure
 the game exits when the window is closed, makes sure the window cant be resized, sets the game title "Minesweeper" in the window, makes sure its opened in the center of the monitor and
 that the window is visable.
 
-#### 6.5.6. Setters
+#### 5.5.6. Setters
 The view also provides the setter methods `setHidden()`, `setFlagged()`, `setValue()` and `setMine()` to call the previously mentioned square methods for state and visual change. The setter methods
 themselves are defined in the `View` superclass, but are abstract and utilized by the `GameController`, except for the `setMine()` method which is utilized in the `gameOver()` method,
 but that will be explained further down.
@@ -269,7 +261,7 @@ but that will be explained further down.
 The set methods simply calls the matching squares methods utilizing the `getSquareFromPosition()` method to access a specified square in the board from the provided point location. The method simply makes sure the provided location is not null,
 or invalid (outside the game board) to then return a square from the board by utilizing the board size and the x/y-point location.
 
-#### 6.5.7. Game over, win, reset
+#### 5.5.7. Game over, win, reset
 The view also provides methods for displaying that the game is over `gameOver()`, the game is won `win()` and a method for resetting the game `reset()`.
 These methods are also defined in the `View` superclass, but are abstract and utilized by the `GameController`.
 
@@ -282,14 +274,14 @@ The `win()` method changes the menu text from "Minesweeper" to "You win!", sets 
 And finally the `reset()` method loops through the board and sets every square back to their initial hidden state, sets the menu title back to "Minesweeper", unlocks the board lock and
 hides the menu buttons once again.
 
-### 6.6. Controller implementation
+### 5.6. Controller implementation
 As defined by the MVC pattern, the controller is responsible for directing communications between the model and view. To make the communication easier, the observer pattern was utilized
 to make the controller observe the observable model and view to then utilize push event methods.
 
 The `Model` and `View` is initialized from provided parameter in the constructor. As the two components are observable and extends the abstract `observed` class, the `attachObserver()` method is utilized to attach
 the controller as an Observer for both the components.
 
-#### 6.6.1. Handle events
+#### 5.6.1. Handle events
 The controller provides the methods `handleSelectSquareEvent()`, `handleFlagSquareEvent()`, `handleResetGameEvent()`, `handleRevealSquareEvent()`, `handleMineHitEvent()` and `handleWinEvent()` for handling events.
 These methods are also defined in the `Controller` superclass, but are abstract and utilized in the `Controller` `handleEvent()` method.
 
@@ -309,9 +301,9 @@ of the mine.
 
 The `handleWinEvent()` method which is called when the squares left in the game is only mines in `Model` (via `handleEvent()`) calls the `View` `win()` method.
 
-## 7. Discussion <a name="section-7"></a>
+## 6. Discussion <a name="section-7"></a>
 
-### 7.1. Fulfillment of purpose
+### 6.1. Fulfillment of purpose
 
 The success of the project is determined by its fulfillment of the purpose statement defined. The simplest way to determine this is to go through the purpose point by point and evaluating each section for compliance:
 
@@ -347,7 +339,7 @@ Then when implementing features, the requirements were again split into smaller 
 
 This workflow follows what was defined before the project started, and does follow the principles of Test Driven Development as required; so the requirement is fulfilled.
 
-### 7.2. Viability of implementation
+### 6.2. Viability of implementation
 When it comes to the quality/viability of the implementation there are a few considerations to be made; outside of just the requirement fulfillment. As determined in the previous section, the implementation does fulfill the requirements places on the project. However, there are a couple of thing which may warrant consideration in regards to what could be done differently.
 
 First of all, the game does work; which means that there is nothing inherently broken about the methodology. But when it comes to the choice of platform for developing a game, Java may not have been the best choice. The Minesweeper game is not a resource hungry game, or at least if it is it is due to a bad implementation rather than a complex concept. But there is a reason why games are generally not developed in Java; and part of that is performance. Java provides a lot of functionality which makes it a great language for many scenarios. However, when it comes to games the performance cost (such as garbage collection) of this may not be worth it. For a small game like Minesweeper it does not really matter, but considering future development into more advanced games switching languages may be appropriate.
@@ -358,7 +350,7 @@ Lastly, there is a lot of improvement to be made with the "square generation" fu
 
 But in theory (and rarely in practice) it is possible for an impossible board to be generated. Mines could be placed in such a way that you have to guess where the mine is, and therefore the game is no longer based on skill, and instead luck. There are multiple algorithms to achieve "always possible" boards which could be implemented. One such way is to randomize the board, but then use a set of rules to validate that the board is still solvable; and if it isn't modify the mine placements. Since the game is not particularly complicated, the validation isn't overly complicated; but it is still a lot more complicated than a random "grace area" method.
 
-### 7.3. Personal reflections
+### 6.3. Personal reflections
 Working with TDD was definitely challenging, it required good planning and a very methodical approach. There was a lot to be learned, everything from trying to structure simple but effective tests, to making the small simple implementations of them. It is definitely a learning-curve, as the approach of implementing the logic before the tests, or no tests at all had previously been the working approach of previous courses.
 
 Another very important part of the project that almost every human can benefit learning from is working in a team. This time we were only two people working on the project, but it still required good planning and communication.
